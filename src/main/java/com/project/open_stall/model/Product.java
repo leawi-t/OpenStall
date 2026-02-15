@@ -1,0 +1,68 @@
+package com.project.open_stall.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity(name = "baseEntity")
+public class Product extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @NotBlank(message = "Product name can not be blank")
+    @Size(max = 255)
+    private String name;
+
+    @NotBlank(message = "Description of the product can not be blank")
+    @Column(length = 2000, nullable = false)
+    private String description;
+
+    @Column(length = 1000)
+    private String model;
+
+    private int stockQuantity;
+
+    @Column(precision = 19, scale = 4, nullable = false)
+    private BigDecimal salePrice;
+
+    @Column(precision = 19, scale = 4, nullable = false)
+    private BigDecimal supplierCost;
+
+    @ElementCollection
+    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "product_image")
+    private List<ProductImage> productImages = new ArrayList<>();
+
+    @ElementCollection
+    private Set<String> tags = new HashSet<>();
+
+    private boolean active = true;
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_categories",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private SupplierProfile supplierProfile;
+}
