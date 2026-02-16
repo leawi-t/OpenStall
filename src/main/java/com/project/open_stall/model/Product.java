@@ -50,7 +50,6 @@ public class Product extends BaseEntity {
 
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "product_image")
     @Valid
     private List<ProductImage> productImages = new ArrayList<>();
 

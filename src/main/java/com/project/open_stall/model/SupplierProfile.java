@@ -2,6 +2,7 @@ package com.project.open_stall.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,8 +21,8 @@ public class SupplierProfile {
 
     private String companyName;
 
-    @Column(length = 2000)
-    private String description;
+    @Column(length = 2000, nullable = false)
+    private String bio;
 
     @OneToOne
     @MapsId
@@ -32,8 +33,15 @@ public class SupplierProfile {
     private List<Product> products = new ArrayList<>();
 
     @OneToOne(mappedBy = "supplierProfile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Column(nullable = false)
     @Valid
     private Address address;
+
+    @ElementCollection
+    @Size(min = 1)
+    @CollectionTable(name = "social_media_links", joinColumns = @JoinColumn(name = "supplier_id"))
+    @Valid
+    List<SocialMediaLink> socialMediaLinks;
 
     public void setAddress(Address address) {
         this.address = address;
