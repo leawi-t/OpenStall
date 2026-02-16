@@ -1,7 +1,9 @@
 package com.project.open_stall.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,6 +38,8 @@ public class Product extends BaseEntity {
     @Column(length = 1000)
     private String model;
 
+    @PositiveOrZero
+    @Column(nullable = false)
     private int stockQuantity;
 
     @Column(precision = 19, scale = 4, nullable = false)
@@ -47,6 +51,7 @@ public class Product extends BaseEntity {
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "product_image")
+    @Valid
     private List<ProductImage> productImages = new ArrayList<>();
 
     @ElementCollection
@@ -65,4 +70,10 @@ public class Product extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id", nullable = false)
     private SupplierProfile supplierProfile;
+
+    public void addCategory(Category category){
+        categories.add(category);
+        Set<Product> products = category.getProducts();
+        products.add(this);
+    }
 }

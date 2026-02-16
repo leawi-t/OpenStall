@@ -17,7 +17,7 @@ public class ProductImage {
     private String url;
 
     @NotBlank
-    @Size(max = 1000)
+    @Size(max = 300)
     private String altText;
 
     private int order;
