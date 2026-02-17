@@ -6,12 +6,11 @@ import java.math.BigDecimal;
 
 //for basic product information
 public record ProductResponseDto(
+        long id,
         String name,
         String model,
         int stockQuantity,
         BigDecimal salePrice,
-        ProductImage productImage,
-        long supplierId,
-        long categoryId
+        ProductImage productImage
 ) {
 }

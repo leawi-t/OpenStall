@@ -2,6 +2,8 @@ package com.project.open_stall.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,9 +21,11 @@ public class SupplierProfile {
     @Id
     private Long id;
 
+    @Size(max = 50, message = "Comapny name can  not be longer than 50 characters")
     private String companyName;
 
-    @Column(length = 2000, nullable = false)
+    @NotBlank
+    @Column(length = 250)
     private String bio;
 
     @OneToOne
@@ -33,12 +37,12 @@ public class SupplierProfile {
     private List<Product> products = new ArrayList<>();
 
     @OneToOne(mappedBy = "supplierProfile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Column(nullable = false)
     @Valid
     private Address address;
 
+    @NotNull
     @ElementCollection
-    @Size(min = 1)
+    @Size(min = 1, message = "suppliers must include at least one social media platform link")
     @CollectionTable(name = "social_media_links", joinColumns = @JoinColumn(name = "supplier_id"))
     @Valid
     List<SocialMediaLink> socialMediaLinks;

@@ -1,6 +1,7 @@
 package com.project.open_stall.dto.productDto;
 
 import com.project.open_stall.model.ProductImage;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,9 +10,7 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.List;
 
-//for user to add a product
-public record AddProductDto(
-
+public record ProductRequestDto(
         @NotBlank
         @Size(max = 100, message = "Product name can be at max 100 characters")
         String name,
@@ -29,12 +28,13 @@ public record AddProductDto(
 
         @NotNull
         @Min(value = 0, message = "Price can not be less than 0")
-        BigDecimal salesPrice,
+        BigDecimal salePrice,
 
         @NotNull
         @Min(value = 0, message = "Price can not be less than 0")
         BigDecimal supplierCost,
 
+        @Valid
         List<ProductImage> productImages,
 
         @Size(min = 1, max = 10)
@@ -42,6 +42,5 @@ public record AddProductDto(
 
         @Size(min = 1, max = 10)
         List<String> tags
-
 ) {
 }

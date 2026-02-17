@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// TODO: add better validations for the names
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,15 +23,15 @@ public class User extends BaseEntity {
     private long id;
 
     @NotBlank(message = "first name can not be blank")
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 25)
     private String firstName;
 
     @NotBlank(message = "last name can not be blank")
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 25)
     private String lastName;
 
     @NotBlank(message = "Username can not be blank")
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 25, unique = true)
     private String userName;
 
     @NotBlank(message = "Email can not be blank")

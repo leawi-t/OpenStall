@@ -50,6 +50,7 @@ public class Product extends BaseEntity {
 
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    @Size(max = 5, message = "A product can not have more than 5 images")
     @Valid
     private List<ProductImage> productImages = new ArrayList<>();
 

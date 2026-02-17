@@ -20,6 +20,6 @@ public class ProductImage {
     @Size(max = 300)
     private String altText;
 
-    private int order;
+    private int orderOfDisplay;
 }
 
