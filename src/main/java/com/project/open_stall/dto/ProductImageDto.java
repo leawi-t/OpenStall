@@ -11,6 +11,6 @@ public record ProductImageDto(
         @Size(max = 300)
         String altText,
 
-        int order
+        int orderOfDisplay
 ) {
 }

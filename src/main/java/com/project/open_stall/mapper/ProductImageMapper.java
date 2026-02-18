@@ -1,6 +1,7 @@
 package com.project.open_stall.mapper;
 
 import com.project.open_stall.dto.ProductImageDto;
+import com.project.open_stall.model.Product;
 import com.project.open_stall.model.ProductImage;
 import org.mapstruct.Mapper;
 
@@ -8,4 +9,6 @@ import org.mapstruct.Mapper;
 public interface ProductImageMapper {
 
     ProductImage toEntity(ProductImageDto dto);
+
+    ProductImageDto toDto(ProductImage productImage);
 }

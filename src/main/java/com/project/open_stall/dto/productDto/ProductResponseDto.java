@@ -11,6 +11,6 @@ public record ProductResponseDto(
         String model,
         int stockQuantity,
         BigDecimal salePrice,
-        ProductImageDto primaryImage
+        ProductImageDto productImage
 ) {
 }

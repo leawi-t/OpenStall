@@ -7,24 +7,29 @@ import com.project.open_stall.dto.productDto.ProductUpdateDto;
 import com.project.open_stall.model.Category;
 import com.project.open_stall.model.Product;
 import org.mapstruct.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {ProductImageMapper.class, CategoryMapper.class, SupplierProfileMapper.class})
-public interface ProductMapper {
+public abstract class ProductMapper {
 
-    @Mapping(target = "primaryImage",
-            expression = "java(product.getImages() != null && !product.getImages().isEmpty() ? product.getImages().get(0) : null)")
-    ProductResponseDto toResponse(Product product);
+    @Autowired
+    protected ProductImageMapper productImageMapper; // Inject the sub-mapper
 
-    List<ProductResponseDto> toResponseList(List<Product> products);
+    @Mapping(target = "productImage",
+            expression = "java(product.getProductImages() != null && !product.getProductImages().isEmpty() ? " +
+                    "productImageMapper.toDto(product.getProductImages().get(0)) : null)")
+    public abstract ProductResponseDto toResponse(Product product);
 
-    ProductDetailDto toDetail(Product product);
+    public abstract List<ProductResponseDto> toResponseList(List<Product> products);
+
+    public abstract ProductDetailDto toDetail(Product product);
 
     @Mapping(target = "categories", source = "categoryIds")
-    Product toEntity(ProductRequestDto dto);
+    public abstract Product toEntity(ProductRequestDto dto);
 
-    default Category mapIdToCategory(Long id) {
+    Category mapIdToCategory(Long id) {
         if (id == null) return null;
         Category category = new Category();
         category.setId(id);
@@ -37,5 +42,5 @@ public interface ProductMapper {
             target = "productImages",
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL
     )
-    void updateEntity(ProductUpdateDto dto, @MappingTarget Product product);
+    public abstract void updateEntity(ProductUpdateDto dto, @MappingTarget Product product);
 }

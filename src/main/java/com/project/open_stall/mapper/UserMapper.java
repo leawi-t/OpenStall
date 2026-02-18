@@ -7,6 +7,7 @@ import org.mapstruct.*;
 import java.util.List;
 
 // TODO: Maybe add after mapping to ensure that the supplierProfile is associated with the user
+// TODO: Make a way to delete the supplierProfile if it is null
 
 @Mapper(componentModel = "spring", uses = {SupplierProfileMapper.class})
 public interface UserMapper {
@@ -18,11 +19,6 @@ public interface UserMapper {
     User toEntity(UserRequestDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(
-            source = "supplierProfile",
-            target = "supplierProfile",
-            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL
-    )
     void updateEntity(UserUpdateDto dto, @MappingTarget User user);
 
 }
