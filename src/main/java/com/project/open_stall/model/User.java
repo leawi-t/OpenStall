@@ -50,5 +50,12 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SupplierProfile supplierProfile;
+
+    public void setSupplierProfile(SupplierProfile profile) {
+        this.supplierProfile = profile;
+        if (profile != null) {
+            profile.setUser(this);
+        }
+    }
 }
 

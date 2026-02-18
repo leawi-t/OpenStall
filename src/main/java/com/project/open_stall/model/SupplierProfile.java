@@ -21,7 +21,7 @@ public class SupplierProfile {
     @Id
     private Long id;
 
-    @Size(max = 50, message = "Comapny name can  not be longer than 50 characters")
+    @Size(max = 50, message = "Company name can  not be longer than 50 characters")
     private String companyName;
 
     @NotBlank

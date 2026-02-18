@@ -1,7 +1,7 @@
 package com.project.open_stall.dto.supplierProfileDto;
 
-import com.project.open_stall.dto.SocialMediaLinkDto;
 import com.project.open_stall.dto.addressDto.AddressDto;
+import com.project.open_stall.model.SocialMediaLink;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,6 +25,6 @@ public record SupplierProfileRequestDto(
         @NotNull
         @Valid
         @Size(min = 1, message = "Suppliers must include at least one social media platform link")
-        List<SocialMediaLinkDto> socialMediaLinks
+        List<SocialMediaLink> socialMediaLinks
 ) {
 }

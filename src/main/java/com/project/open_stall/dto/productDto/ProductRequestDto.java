@@ -1,6 +1,6 @@
 package com.project.open_stall.dto.productDto;
 
-import com.project.open_stall.model.ProductImage;
+import com.project.open_stall.dto.ProductImageDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -35,10 +35,10 @@ public record ProductRequestDto(
         BigDecimal supplierCost,
 
         @Valid
-        List<ProductImage> productImages,
+        List<ProductImageDto> productImages,
 
         @Size(min = 1, max = 10)
-        List<Long> categoryId,
+        List<Long> categoryIds,
 
         @Size(min = 1, max = 10)
         List<String> tags

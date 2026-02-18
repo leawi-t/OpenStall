@@ -1,6 +1,6 @@
 package com.project.open_stall.dto.productDto;
 
-import com.project.open_stall.model.ProductImage;
+import com.project.open_stall.dto.ProductImageDto;
 
 import java.math.BigDecimal;
 
@@ -11,6 +11,6 @@ public record ProductResponseDto(
         String model,
         int stockQuantity,
         BigDecimal salePrice,
-        ProductImage productImage
+        ProductImageDto primaryImage
 ) {
 }
