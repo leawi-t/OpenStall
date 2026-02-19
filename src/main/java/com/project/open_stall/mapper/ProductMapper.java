@@ -10,6 +10,7 @@ import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring", uses = {ProductImageMapper.class, CategoryMapper.class, SupplierProfileMapper.class})
 public abstract class ProductMapper {
@@ -23,6 +24,8 @@ public abstract class ProductMapper {
     public abstract ProductResponseDto toResponse(Product product);
 
     public abstract List<ProductResponseDto> toResponseList(List<Product> products);
+
+    public abstract Set<ProductResponseDto> toResponseSet(Set<Product> products);
 
     public abstract ProductDetailDto toDetail(Product product);
 
