@@ -1,13 +1,12 @@
 package com.project.open_stall.controller;
 
-import com.project.open_stall.dto.categoryDto.CategoryDetailDto;
-import com.project.open_stall.dto.categoryDto.CategoryRequestDto;
-import com.project.open_stall.dto.categoryDto.CategoryResponseDto;
-import com.project.open_stall.dto.categoryDto.CategoryUpdateDto;
+import com.project.open_stall.dto.categoryDto.*;
 import com.project.open_stall.dto.productDto.ProductResponseDto;
 import com.project.open_stall.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,37 +24,42 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<CategoryResponseDto> getAllProducts(){
-        return service.getAllCategories();
+    public ResponseEntity<List<CategoryResponseDto>> getAllProducts(){
+        return new ResponseEntity<>(service.getAllCategories(), HttpStatus.OK);
     }
 
     @GetMapping("/{categoryId}")
-    public CategoryDetailDto getProductById(@PathVariable long categoryId){
-        return service.getCategoryById(categoryId);
+    public ResponseEntity<CategoryDetailDto> getProductById(@PathVariable long categoryId){
+        return new ResponseEntity<>(service.getCategoryById(categoryId), HttpStatus.OK);
     }
 
     @GetMapping("/search/{keyword}")
-    public List<CategoryResponseDto> searchCategory(@PathVariable String keyword){
-        return service.searchCategory(keyword);
+    public ResponseEntity<List<CategoryResponseDto>> searchCategory(@PathVariable String keyword){
+        return new ResponseEntity<>(service.searchCategory(keyword), HttpStatus.OK);
     }
 
     @GetMapping("/{categoryId}/products")
-    public Set<ProductResponseDto> getProductsByCategory(@PathVariable long categoryId){
-        return service.getProductsByCategory(categoryId);
+    public ResponseEntity<Set<ProductResponseDto>> getProductsByCategory(@PathVariable long categoryId){
+        return new ResponseEntity<>(service.getProductsByCategory(categoryId), HttpStatus.OK);
     }
 
     @PostMapping()
-    public CategoryDetailDto addCategory(@RequestBody @Valid CategoryRequestDto dto){
-        return service.addCategory(dto);
+    public ResponseEntity<CategoryDetailDto> addCategory(@RequestBody @Valid CategoryRequestDto dto){
+        return new ResponseEntity<>(service.addCategory(dto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{categoryId}")
-    public CategoryDetailDto updateCategory(
+    public ResponseEntity<CategoryDetailDto> updateCategory(
             @RequestBody @Valid CategoryUpdateDto dto,
             @PathVariable long categoryId)
     {
-        return service.updateCategory(dto, categoryId);
+        return new ResponseEntity<>(service.updateCategory(dto, categoryId), HttpStatus.OK);
     }
 
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategoryById(@PathVariable long categoryId){
+        service.deleteCategory(categoryId);
+        return ResponseEntity.noContent().build();
+    }
 
 }

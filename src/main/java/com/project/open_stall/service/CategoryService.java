@@ -1,9 +1,6 @@
 package com.project.open_stall.service;
 
-import com.project.open_stall.dto.categoryDto.CategoryDetailDto;
-import com.project.open_stall.dto.categoryDto.CategoryRequestDto;
-import com.project.open_stall.dto.categoryDto.CategoryResponseDto;
-import com.project.open_stall.dto.categoryDto.CategoryUpdateDto;
+import com.project.open_stall.dto.categoryDto.*;
 import com.project.open_stall.dto.productDto.ProductResponseDto;
 import com.project.open_stall.exception.ResourceNotFoundException;
 import com.project.open_stall.mapper.CategoryMapper;
@@ -20,10 +17,10 @@ import java.util.Set;
 @Service
 public class CategoryService {
 
-    CategoryRepo categoryRepo;
-    ProductRepo productRepo;
-    CategoryMapper categoryMapper;
-    ProductMapper productMapper;
+    private final CategoryRepo categoryRepo;
+    private final ProductRepo productRepo;
+    private final CategoryMapper categoryMapper;
+    private final ProductMapper productMapper;
 
     @Autowired
     public CategoryService(CategoryRepo categoryRepo, ProductRepo productRepo,
