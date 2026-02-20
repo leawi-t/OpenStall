@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-// TODO: make a filter method with different attributed
+// TODO: make a filter method with different attributes with JPASpecificationFilter
+// TODO: Add add product and update product in the supplierProfile service
 
 @Service
 public class ProductService {
@@ -40,11 +41,14 @@ public class ProductService {
                 ()->new ResourceNotFoundException("The product with id: " + productId + " was not found")));
     }
 
+    public List<ProductResponseDto> filter(String name, String model, int salePrice) {
+        return productMapper.toResponseList(productRepo.findByNameAndModelAndSalePriceGreaterThan(name, model, salePrice));
+    }
+
     public void deleteProductById(long productId){
         if (!productRepo.existsById(productId)){
             throw new ResourceNotFoundException("The product with id: " + productId + " was not found");
         }
         productRepo.deleteById(productId);
     }
-
 }
