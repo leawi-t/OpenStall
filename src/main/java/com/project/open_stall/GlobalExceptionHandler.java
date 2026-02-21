@@ -1,5 +1,6 @@
 package com.project.open_stall;
 
+import com.project.open_stall.exception.InvalidOperationException;
 import com.project.open_stall.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(InvalidOperationException.class)
+    public ResponseEntity<CustomErrorResponse> InvalidOperationExceptionHandler(InvalidOperationException ex){
+        CustomErrorResponse errorResponse = new CustomErrorResponse(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), "Invalid Operation Exception", ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CustomErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
-        CustomErrorResponse errorResponse = new CustomErrorResponse(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), "Resource Not Found Exception", ex.getMessage());
+        CustomErrorResponse errorResponse = new CustomErrorResponse(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), "Method Argument Invalid", ex.getMessage());
 
         ex.getBindingResult().getFieldErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();

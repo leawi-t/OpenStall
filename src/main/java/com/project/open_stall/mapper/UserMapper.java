@@ -12,7 +12,9 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {SupplierProfileMapper.class})
 public interface UserMapper {
 
-    List<UserResponseDto> toResponse(List<User> users);
+    List<UserResponseDto> toResponseList(List<User> users);
+
+    UserResponseDto toResponse(User user);
 
     UserDetailDto toDetail(User user);
 

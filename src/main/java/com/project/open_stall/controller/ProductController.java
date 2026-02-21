@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,7 @@ public class ProductController {
     public ResponseEntity<List<ProductResponseDto>> filterProducts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String model,
-            @RequestParam(required = false) int salePrice
+            @RequestParam(required = false) BigDecimal salePrice
     ){
         return new ResponseEntity<>(service.filter(name, model, salePrice), HttpStatus.OK);
     }

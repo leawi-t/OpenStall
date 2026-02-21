@@ -10,6 +10,7 @@ import com.project.open_stall.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 // TODO: make a filter method with different attributes with JPASpecificationFilter
@@ -41,7 +42,7 @@ public class ProductService {
                 ()->new ResourceNotFoundException("The product with id: " + productId + " was not found")));
     }
 
-    public List<ProductResponseDto> filter(String name, String model, int salePrice) {
+    public List<ProductResponseDto> filter(String name, String model, BigDecimal salePrice) {
         return productMapper.toResponseList(productRepo.findByNameAndModelAndSalePriceGreaterThan(name, model, salePrice));
     }
 

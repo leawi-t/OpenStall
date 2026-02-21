@@ -7,7 +7,6 @@ import com.project.open_stall.mapper.CategoryMapper;
 import com.project.open_stall.mapper.ProductMapper;
 import com.project.open_stall.model.Category;
 import com.project.open_stall.repo.CategoryRepo;
-import com.project.open_stall.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,16 +17,14 @@ import java.util.Set;
 public class CategoryService {
 
     private final CategoryRepo categoryRepo;
-    private final ProductRepo productRepo;
     private final CategoryMapper categoryMapper;
     private final ProductMapper productMapper;
 
     @Autowired
-    public CategoryService(CategoryRepo categoryRepo, ProductRepo productRepo,
+    public CategoryService(CategoryRepo categoryRepo,
                            CategoryMapper categoryMapper, ProductMapper productMapper){
         this.categoryRepo = categoryRepo;
         this.categoryMapper = categoryMapper;
-        this.productRepo = productRepo;
         this.productMapper = productMapper;
     }
 
