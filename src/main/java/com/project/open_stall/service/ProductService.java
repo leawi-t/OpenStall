@@ -1,37 +1,36 @@
 package com.project.open_stall.service;
 
-import com.project.open_stall.dto.productDto.ProductDetailDto;
-import com.project.open_stall.dto.productDto.ProductResponseDto;
-import com.project.open_stall.exception.ResourceNotFoundException;
-import com.project.open_stall.mapper.CategoryMapper;
-import com.project.open_stall.mapper.ProductMapper;
+import com.project.open_stall.dto.productDto.*;
+import com.project.open_stall.exception.*;
+import com.project.open_stall.mapper.*;
+import com.project.open_stall.model.Category;
+import com.project.open_stall.model.Product;
+import com.project.open_stall.model.SupplierProfile;
+import com.project.open_stall.model.User;
 import com.project.open_stall.repo.CategoryRepo;
 import com.project.open_stall.repo.ProductRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.project.open_stall.repo.UserRepo;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.nio.file.AccessDeniedException;
+import java.util.HashSet;
 import java.util.List;
 
 // TODO: make a filter method with different attributes with JPASpecificationFilter
 // TODO: Add add product and update product in the supplierProfile service
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepo productRepo;
     private final ProductMapper productMapper;
     private final CategoryRepo categoryRepo;
     private final CategoryMapper categoryMapper;
-
-    @Autowired
-    public ProductService(ProductRepo productRepo, ProductMapper productMapper,
-                          CategoryRepo categoryRepo, CategoryMapper categoryMapper) {
-        this.productRepo = productRepo;
-        this.productMapper = productMapper;
-        this.categoryRepo = categoryRepo;
-        this.categoryMapper = categoryMapper;
-    }
+    private final UserRepo userRepo;
 
     public List<ProductResponseDto> getAllProducts(){
         return productMapper.toResponseList(productRepo.findAll());
@@ -44,6 +43,40 @@ public class ProductService {
 
     public List<ProductResponseDto> filter(String name, String model, BigDecimal salePrice) {
         return productMapper.toResponseList(productRepo.findByNameAndModelAndSalePriceGreaterThan(name, model, salePrice));
+    }
+
+    public ProductDetailDto addProduct(ProductRequestDto dto, long userId){
+        Product product = productMapper.toEntity(dto);
+
+        List<Category> categories = categoryRepo.findAllById(dto.categoryIds());
+        product.setCategories(new HashSet<>(categories));
+
+        User user = userRepo.findById(userId)
+                .orElseThrow(()->new ResourceNotFoundException("User with " + userId + " does not exist"));
+        SupplierProfile supplierProfile = user.getSupplierProfile();
+        if (supplierProfile==null) throw new InvalidOperationException("User without supplier profile can't add a product");
+
+        product.setSupplierProfile(supplierProfile);
+        return productMapper.toDetail(productRepo.save(product));
+    }
+
+    @Transactional
+    public ProductDetailDto updateProduct(ProductUpdateDto dto, long productId, long userId) {
+        Product product = productRepo.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+        if (product.getSupplierProfile().getUser().getId() != userId) {
+            throw new InvalidOperationException("Not Authorized to update the product");
+        }
+
+        productMapper.updateEntity(dto, product);
+
+        List<Category> categories = categoryRepo.findAllById(dto.categoryId());
+        product.getCategories().clear();
+
+        for (Category x: categories) product.getCategories().add(x);
+
+        return productMapper.toDetail(productRepo.save(product));
     }
 
     public void deleteProductById(long productId){

@@ -20,7 +20,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "baseEntity")
+@Entity(name = "product")
 public class Product extends BaseEntity {
 
     @Id
