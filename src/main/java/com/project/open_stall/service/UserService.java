@@ -10,6 +10,7 @@ import com.project.open_stall.model.User;
 import com.project.open_stall.repo.UserRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,13 +33,14 @@ public class UserService {
     }
 
     // TODO: Instead of just username probably better to create a filter
-    public UserDetailDto getUserByUsername(String userName){
+
+    public UserDetailDto searchUser(String userName){
         return userMapper.toDetail(userRepo.findByUserName(userName)
                 .orElseThrow(() -> new ResourceNotFoundException(userName + " does not exist")));
     }
 
     @Transactional
-    public UserResponseDto registerUser(UserRequestDto dto){
+    public UserDetailDto registerUser(UserRequestDto dto){
         if (userRepo.existsByEmail(dto.email())){
             throw new InvalidOperationException("Email already in use");
         }
@@ -57,7 +59,23 @@ public class UserService {
         }
 
         User savedUser = userRepo.save(user);
-        return userMapper.toResponse(savedUser);
+        return userMapper.toDetail(savedUser);
+    }
+
+    @Transactional
+    public UserDetailDto updateUser(UserUpdateDto dto, long userId){
+        User user = userRepo.findById(userId).
+                orElseThrow(() -> new ResourceNotFoundException("User with " + userId + " does not exist"));
+
+        userMapper.updateEntity(dto, user);
+        return userMapper.toDetail(user);
+    }
+
+    @Transactional
+    public void deleteUser(long userId){
+        if (!userRepo.existsById(userId))
+            throw new ResourceNotFoundException("User with " + userId + " does not exist");
+        userRepo.deleteById(userId);
     }
 
     @Transactional
@@ -69,5 +87,25 @@ public class UserService {
         user.setSupplierProfile(profileMapper.toEntity(dto));
 
         return userMapper.toDetail(userRepo.save(user));
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('SUPPLIER')")
+    public SupplierProfileDetailsDto updateSupplierProfile(SupplierProfileUpdateDto dto, long userId){
+        User user = userRepo.findById(userId).
+                orElseThrow(() -> new ResourceNotFoundException("User with " + userId + " does not exist"));
+
+        profileMapper.updateEntity(dto, user.getSupplierProfile());
+        return profileMapper.toDetails(user.getSupplierProfile());
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('SUPPLIER')")
+    public void deleteSupplierProfile(long userId){
+        User user = userRepo.findById(userId).
+                orElseThrow(() -> new ResourceNotFoundException("User with " + userId + " does not exist"));
+
+        user.setSupplierProfile(null);
+        user.setRole(Role.valueOf("CONSUMER"));
     }
 }

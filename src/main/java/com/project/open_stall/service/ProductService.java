@@ -12,6 +12,7 @@ import com.project.open_stall.repo.ProductRepo;
 import com.project.open_stall.repo.UserRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -45,6 +46,8 @@ public class ProductService {
         return productMapper.toResponseList(productRepo.findByNameAndModelAndSalePriceGreaterThan(name, model, salePrice));
     }
 
+    @Transactional
+    @PreAuthorize("hasRole('SUPPLIER')")
     public ProductDetailDto addProduct(ProductRequestDto dto, long userId){
         Product product = productMapper.toEntity(dto);
 
@@ -53,10 +56,8 @@ public class ProductService {
 
         User user = userRepo.findById(userId)
                 .orElseThrow(()->new ResourceNotFoundException("User with " + userId + " does not exist"));
-        SupplierProfile supplierProfile = user.getSupplierProfile();
-        if (supplierProfile==null) throw new InvalidOperationException("User without supplier profile can't add a product");
 
-        product.setSupplierProfile(supplierProfile);
+        product.setSupplierProfile(user.getSupplierProfile());
         return productMapper.toDetail(productRepo.save(product));
     }
 

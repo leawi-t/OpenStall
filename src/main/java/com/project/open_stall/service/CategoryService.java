@@ -7,6 +7,7 @@ import com.project.open_stall.mapper.CategoryMapper;
 import com.project.open_stall.mapper.ProductMapper;
 import com.project.open_stall.model.Category;
 import com.project.open_stall.repo.CategoryRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,16 +46,19 @@ public class CategoryService {
         return productMapper.toResponseSet(category.getProducts());
     }
 
+    @Transactional
     public CategoryDetailDto addCategory(CategoryRequestDto dto){
         return categoryMapper.toDetail(categoryRepo.save(categoryMapper.toEntity(dto)));
     }
 
+    @Transactional
     public CategoryDetailDto updateCategory(CategoryUpdateDto dto, long categoryId){
         Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category with id: " + categoryId + " was not found"));
         categoryMapper.updateEntity(dto, category);
         return categoryMapper.toDetail(categoryRepo.save(category));
     }
 
+    @Transactional
     public void deleteCategory(long categoryId){
         if (!categoryRepo.existsById(categoryId)){
             throw new ResourceNotFoundException("Category with id: " + categoryId + " was not found");
