@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+//TODO: Instead of deleting set boolean active = false
+
 @RestController
 @RequestMapping("/products")
 public class ProductController {

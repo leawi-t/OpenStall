@@ -62,6 +62,7 @@ public class ProductService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('SUPPLIER')")
     public ProductDetailDto updateProduct(ProductUpdateDto dto, long productId, long userId) {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
@@ -80,6 +81,7 @@ public class ProductService {
         return productMapper.toDetail(productRepo.save(product));
     }
 
+    @Transactional
     public void deleteProductById(long productId){
         if (!productRepo.existsById(productId)){
             throw new ResourceNotFoundException("The product with id: " + productId + " was not found");
