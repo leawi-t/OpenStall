@@ -5,7 +5,6 @@ import com.project.open_stall.exception.*;
 import com.project.open_stall.mapper.*;
 import com.project.open_stall.model.Category;
 import com.project.open_stall.model.Product;
-import com.project.open_stall.model.SupplierProfile;
 import com.project.open_stall.model.User;
 import com.project.open_stall.repo.CategoryRepo;
 import com.project.open_stall.repo.ProductRepo;
@@ -16,12 +15,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.nio.file.AccessDeniedException;
 import java.util.HashSet;
 import java.util.List;
 
 // TODO: make a filter method with different attributes with JPASpecificationFilter
-// TODO: Add add product and update product in the supplierProfile service
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +27,6 @@ public class ProductService {
     private final ProductRepo productRepo;
     private final ProductMapper productMapper;
     private final CategoryRepo categoryRepo;
-    private final CategoryMapper categoryMapper;
     private final UserRepo userRepo;
 
     public List<ProductResponseDto> getAllProducts(){
@@ -76,7 +72,7 @@ public class ProductService {
         List<Category> categories = categoryRepo.findAllById(dto.categoryId());
         product.getCategories().clear();
 
-        for (Category x: categories) product.getCategories().add(x);
+        product.setCategories(new HashSet<>(categories));
 
         return productMapper.toDetail(productRepo.save(product));
     }

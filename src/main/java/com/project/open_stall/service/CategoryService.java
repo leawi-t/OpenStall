@@ -9,7 +9,6 @@ import com.project.open_stall.model.Category;
 import com.project.open_stall.repo.CategoryRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 

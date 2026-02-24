@@ -3,6 +3,7 @@ package com.project.open_stall.controller;
 import com.project.open_stall.dto.productDto.*;
 import com.project.open_stall.service.ProductService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +15,11 @@ import java.util.List;
 //TODO: Instead of deleting set boolean active = false
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/products")
 public class ProductController {
 
     private final ProductService service;
-
-    @Autowired
-    public ProductController(ProductService service){
-        this.service = service;
-    }
 
     @GetMapping
     public ResponseEntity<List<ProductResponseDto>> getAllProducts(){

@@ -9,6 +9,7 @@ import com.project.open_stall.dto.userDto.UserResponseDto;
 import com.project.open_stall.dto.userDto.UserUpdateDto;
 import com.project.open_stall.service.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +20,11 @@ import java.util.List;
 //TODO: remember to preAuthorize and make sure to check the user logged in can update his/her profile only
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService service;
-
-    @Autowired
-    public UserController(UserService service){ this.service = service; }
 
     @GetMapping
     public ResponseEntity<List<UserResponseDto>> getAllUsers(){

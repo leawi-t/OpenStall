@@ -4,7 +4,7 @@ import com.project.open_stall.dto.categoryDto.*;
 import com.project.open_stall.dto.productDto.ProductResponseDto;
 import com.project.open_stall.service.CategoryService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,28 +13,24 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/categories")
 public class CategoryController {
 
     private final CategoryService service;
 
-    @Autowired
-    public CategoryController(CategoryService service){
-        this.service = service;
-    }
-
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDto>> getAllProducts(){
+    public ResponseEntity<List<CategoryResponseDto>> getAllCategories(){
         return new ResponseEntity<>(service.getAllCategories(), HttpStatus.OK);
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<CategoryDetailDto> getProductById(@PathVariable long categoryId){
+    public ResponseEntity<CategoryDetailDto> getCategoryById(@PathVariable long categoryId){
         return new ResponseEntity<>(service.getCategoryById(categoryId), HttpStatus.OK);
     }
 
-    @GetMapping("/search/{keyword}")
-    public ResponseEntity<List<CategoryResponseDto>> searchCategory(@PathVariable String keyword){
+    @GetMapping("/search")
+    public ResponseEntity<List<CategoryResponseDto>> searchCategory(@RequestParam String keyword){
         return new ResponseEntity<>(service.searchCategory(keyword), HttpStatus.OK);
     }
 

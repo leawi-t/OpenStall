@@ -16,7 +16,7 @@ import java.util.Set;
 public abstract class ProductMapper {
 
     @Autowired
-    protected ProductImageMapper productImageMapper; // Inject the sub-mapper
+    protected ProductImageMapper productImageMapper;
 
     @Mapping(target = "productImage",
             expression = "java(product.getProductImages() != null && !product.getProductImages().isEmpty() ? " +

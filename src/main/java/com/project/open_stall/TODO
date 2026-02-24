@@ -1,0 +1,2 @@
+- Add a configuration class to handle method level security
+- make a filter method with different attributes with JPASpecificationFilter
