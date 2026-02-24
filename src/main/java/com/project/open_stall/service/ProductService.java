@@ -32,7 +32,7 @@ public class ProductService {
     private final UserRepo userRepo;
 
     public Page<ProductResponseDto> getAllProducts(Pageable pageable) {
-        Page<Product> products = productRepo.getAllProducts(pageable);
+        Page<Product> products = productRepo.findAll(pageable);
         return products.map(productMapper::toResponse);
     }
 
