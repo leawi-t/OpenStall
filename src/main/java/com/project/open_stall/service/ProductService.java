@@ -11,6 +11,8 @@ import com.project.open_stall.repo.ProductRepo;
 import com.project.open_stall.repo.UserRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -29,17 +31,30 @@ public class ProductService {
     private final CategoryRepo categoryRepo;
     private final UserRepo userRepo;
 
-    public List<ProductResponseDto> getAllProducts(){
-        return productMapper.toResponseList(productRepo.findAll());
+    public Page<ProductResponseDto> getAllProducts(Pageable pageable) {
+        Page<Product> products = productRepo.getAllProducts(pageable);
+        return products.map(productMapper::toResponse);
+    }
+
+    public Page<ProductResponseDto> getAllActiveProducts(Pageable pageable){
+        Page<Product> products = productRepo.findByActiveTrue(pageable);
+        return products.map(productMapper::toResponse);
     }
 
     public ProductDetailDto getProductById(long productId){
-        return productMapper.toDetail(productRepo.findById(productId).orElseThrow(
-                ()->new ResourceNotFoundException("The product with id: " + productId + " was not found")));
+        Product product = productRepo.findById(productId).
+                orElseThrow(()->new ResourceNotFoundException("Product with id: " + productId + " was not found"));
+
+        if (!product.isActive()) throw new ResourceNotFoundException("Product with id: " + productId + " was not found");
+        return productMapper.toDetail(product);
     }
 
-    public List<ProductResponseDto> filter(String name, String model, BigDecimal salePrice) {
-        return productMapper.toResponseList(productRepo.findByNameAndModelAndSalePriceGreaterThan(name, model, salePrice));
+    public Page<ProductResponseDto> filter(String name, String model, BigDecimal salePrice, Pageable pageable) {
+        Page<Product> products = productRepo.findByNameAndModelAndActiveTrueAndSalePriceGreaterThan(name, model,
+                salePrice, pageable);
+
+        return products.map(productMapper::toResponse);
+
     }
 
     @Transactional
@@ -82,6 +97,9 @@ public class ProductService {
         if (!productRepo.existsById(productId)){
             throw new ResourceNotFoundException("The product with id: " + productId + " was not found");
         }
-        productRepo.deleteById(productId);
+        Product product = productRepo.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+        product.setActive(false);
     }
 }

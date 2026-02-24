@@ -4,7 +4,9 @@ import com.project.open_stall.dto.productDto.*;
 import com.project.open_stall.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +24,15 @@ public class ProductController {
     private final ProductService service;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts(){
-        return new ResponseEntity<>(service.getAllProducts(), HttpStatus.OK);
+    public ResponseEntity<PagedModel<ProductResponseDto>> getAllProducts(Pageable pageable) {
+        Page<ProductResponseDto> page = service.getAllProducts(pageable);
+        return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<PagedModel<ProductResponseDto>> getAllActiveProducts(Pageable pageable){
+        Page<ProductResponseDto> page = service.getAllActiveProducts(pageable);
+        return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
     }
 
     @GetMapping("/{productId}")
@@ -32,12 +41,14 @@ public class ProductController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<List<ProductResponseDto>> filterProducts(
+    public ResponseEntity<PagedModel<ProductResponseDto>> filterProducts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String model,
-            @RequestParam(required = false) BigDecimal salePrice
+            @RequestParam(required = false) BigDecimal salePrice,
+            Pageable pageable
     ){
-        return new ResponseEntity<>(service.filter(name, model, salePrice), HttpStatus.OK);
+        Page<ProductResponseDto> page = service.filter(name, model, salePrice, pageable);
+        return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
     }
 
     @PostMapping("/user/{userId}")

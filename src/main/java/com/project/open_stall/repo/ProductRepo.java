@@ -1,14 +1,21 @@
 package com.project.open_stall.repo;
 
 import com.project.open_stall.model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Long> {
 
-    public List<Product> findByNameAndModelAndSalePriceGreaterThan(String name, String model, BigDecimal salePrice);
+    public Page<Product> getAllProducts(Pageable pageable);
+
+    // TODO: this might be better as JPASpecificationFilter
+    public Page<Product> findByNameAndModelAndActiveTrueAndSalePriceGreaterThan(String name, String model,
+                                                                                BigDecimal salePrice, Pageable pageable);
+
+    public Page<Product> findByActiveTrue(Pageable pageable);
 }
