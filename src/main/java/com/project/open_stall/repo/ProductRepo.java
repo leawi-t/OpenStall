@@ -15,8 +15,9 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     Page<Product> findAll(Pageable pageable);
 
     // TODO: this might be better as JPASpecificationFilter
-    public Page<Product> findByNameAndModelAndActiveTrueAndSalePriceGreaterThan(String name, String model,
-                                                                                BigDecimal salePrice, Pageable pageable);
+    public Page<Product> findByNameAndModelTrueAndSalePriceGreaterThan(String name, String model,
+                                                                       BigDecimal salePrice, Pageable pageable);
 
-    public Page<Product> findByActiveTrue(Pageable pageable);
+    @Query(value = "SELECT p FROM product p", nativeQuery = true)
+    public Page<Product> getAllProducts(Pageable pageable);
 }

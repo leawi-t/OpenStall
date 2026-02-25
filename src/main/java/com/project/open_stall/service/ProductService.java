@@ -31,13 +31,14 @@ public class ProductService {
     private final CategoryRepo categoryRepo;
     private final UserRepo userRepo;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<ProductResponseDto> getAllProducts(Pageable pageable) {
-        Page<Product> products = productRepo.findAll(pageable);
+        Page<Product> products = productRepo.getAllProducts(pageable);
         return products.map(productMapper::toResponse);
     }
 
     public Page<ProductResponseDto> getAllActiveProducts(Pageable pageable){
-        Page<Product> products = productRepo.findByActiveTrue(pageable);
+        Page<Product> products = productRepo.findAll(pageable);
         return products.map(productMapper::toResponse);
     }
 
@@ -50,7 +51,7 @@ public class ProductService {
     }
 
     public Page<ProductResponseDto> filter(String name, String model, BigDecimal salePrice, Pageable pageable) {
-        Page<Product> products = productRepo.findByNameAndModelAndActiveTrueAndSalePriceGreaterThan(name, model,
+        Page<Product> products = productRepo.findByNameAndModelTrueAndSalePriceGreaterThan(name, model,
                 salePrice, pageable);
 
         return products.map(productMapper::toResponse);
