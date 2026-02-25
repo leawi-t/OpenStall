@@ -1,24 +1,16 @@
 package com.project.open_stall.controller;
 
-import com.project.open_stall.dto.supplierProfileDto.SupplierProfileDetailsDto;
-import com.project.open_stall.dto.supplierProfileDto.SupplierProfileRequestDto;
-import com.project.open_stall.dto.supplierProfileDto.SupplierProfileUpdateDto;
-import com.project.open_stall.dto.userDto.UserDetailDto;
-import com.project.open_stall.dto.userDto.UserRequestDto;
-import com.project.open_stall.dto.userDto.UserResponseDto;
-import com.project.open_stall.dto.userDto.UserUpdateDto;
+import com.project.open_stall.dto.supplierProfileDto.*;
+import com.project.open_stall.dto.userDto.*;
 import com.project.open_stall.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 //TODO: remember to preAuthorize and make sure to check the user logged in can update his/her profile only
 
@@ -85,5 +77,4 @@ public class UserController {
         service.deleteSupplierProfile(userId);
         return ResponseEntity.noContent().build();
     }
-
 }

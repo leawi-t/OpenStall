@@ -6,14 +6,17 @@ import com.project.open_stall.exception.ResourceNotFoundException;
 import com.project.open_stall.mapper.CategoryMapper;
 import com.project.open_stall.mapper.ProductMapper;
 import com.project.open_stall.model.Category;
+import com.project.open_stall.model.Product;
 import com.project.open_stall.repo.CategoryRepo;
+import com.project.open_stall.repo.ProductRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class CategoryService {
     private final CategoryRepo categoryRepo;
     private final CategoryMapper categoryMapper;
     private final ProductMapper productMapper;
+    private final ProductRepo productRepo;
 
     public List<CategoryResponseDto> getAllCategories(){
         return categoryMapper.toResponseList(categoryRepo.findAll());
@@ -35,9 +39,11 @@ public class CategoryService {
         return categoryMapper.toResponseList(categoryRepo.searchCategory(keyword));
     }
 
-    public Set<ProductResponseDto> getProductsByCategory(long categoryId){
-        Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category with id: " + categoryId + " was not found"));
-        return productMapper.toResponseSet(category.getProducts());
+    public Page<ProductResponseDto> getProductsByCategory(long categoryId, Pageable pageable){
+        Category category = categoryRepo.findById(categoryId).
+                orElseThrow(() -> new ResourceNotFoundException("Category with id: " + categoryId + " was not found"));
+        Page<Product> products = productRepo.findByCategoryId(categoryId, pageable);
+        return products.map(productMapper::toResponse);
     }
 
     @Transactional

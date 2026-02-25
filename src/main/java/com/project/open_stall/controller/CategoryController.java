@@ -5,6 +5,9 @@ import com.project.open_stall.dto.productDto.ProductResponseDto;
 import com.project.open_stall.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +38,9 @@ public class CategoryController {
     }
 
     @GetMapping("/{categoryId}/products")
-    public ResponseEntity<Set<ProductResponseDto>> getProductsByCategory(@PathVariable long categoryId){
-        return new ResponseEntity<>(service.getProductsByCategory(categoryId), HttpStatus.OK);
+    public ResponseEntity<PagedModel<ProductResponseDto>> getProductsByCategory(@PathVariable long categoryId, Pageable pageable){
+        Page<ProductResponseDto> page = service.getProductsByCategory(categoryId, pageable);
+        return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
     }
 
     @PostMapping()

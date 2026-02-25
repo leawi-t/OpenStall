@@ -23,10 +23,6 @@ public abstract class ProductMapper {
                     "productImageMapper.toDto(product.getProductImages().get(0)) : null)")
     public abstract ProductResponseDto toResponse(Product product);
 
-    public abstract List<ProductResponseDto> toResponseList(List<Product> products);
-
-    public abstract Set<ProductResponseDto> toResponseSet(Set<Product> products);
-
     public abstract ProductDetailDto toDetail(Product product);
 
     @Mapping(target = "categories", source = "categoryIds")
