@@ -10,6 +10,8 @@ import com.project.open_stall.model.User;
 import com.project.open_stall.repo.UserRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +25,10 @@ public class UserService {
     private final UserMapper userMapper;
     private final SupplierProfileMapper profileMapper;
 
-    public List<UserResponseDto> getAllUsers(){
-        return userMapper.toResponseList(userRepo.findAll());
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<UserResponseDto> getAllUsers(Pageable pageable){
+        Page<User> page = userRepo.findAll(pageable);
+        return page.map(userMapper::toResponse);
     }
 
     public UserDetailDto getUserById(long id){

@@ -22,7 +22,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "product")
-@SQLRestriction("deleted = false")
+@SQLRestriction("active = true")
 public class Product extends BaseEntity {
 
     @Id
@@ -59,6 +59,7 @@ public class Product extends BaseEntity {
     @ElementCollection
     private Set<String> tags = new HashSet<>();
 
+    @Column(nullable = false)
     private boolean active = true;
 
     @ManyToMany

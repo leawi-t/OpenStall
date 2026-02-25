@@ -11,6 +11,9 @@ import com.project.open_stall.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +30,9 @@ public class UserController {
     private final UserService service;
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDto>> getAllUsers(){
-        return new ResponseEntity<>(service.getAllUsers(), HttpStatus.OK);
+    public ResponseEntity<PagedModel<UserResponseDto>> getAllUsers(Pageable pageable){
+        Page<UserResponseDto> page = service.getAllUsers(pageable);
+        return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
     }
 
     @GetMapping("/{userid}")
