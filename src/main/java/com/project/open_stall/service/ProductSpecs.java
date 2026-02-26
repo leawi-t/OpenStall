@@ -24,6 +24,13 @@ public class ProductSpecs {
         });
     }
 
+    public static Specification<Product> hasDescription(String description){
+        return ((root, query, cb) -> {
+            if (description == null || description.isEmpty()) return null;
+            return cb.like(cb.lower(root.get("model")), '%' + description.toLowerCase() + '%');
+        });
+    }
+
     public static Specification<Product> maxPrice(BigDecimal salePrice){
         return (root, query, cb) -> {
             if (salePrice == null || salePrice.compareTo(BigDecimal.ZERO) < 0) return null;

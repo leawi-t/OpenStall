@@ -46,9 +46,10 @@ public class ProductController {
             @RequestParam(required = false) String model,
             @RequestParam(required = false) BigDecimal salePrice,
             @RequestParam(required = false) long categoryId,
+            @RequestParam(required = false) String description,
             Pageable pageable
     ){
-        Page<ProductResponseDto> page = service.filter(name, model, salePrice, categoryId, pageable);
+        Page<ProductResponseDto> page = service.filter(name, model, salePrice, categoryId, description, pageable);
         return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
     }
 

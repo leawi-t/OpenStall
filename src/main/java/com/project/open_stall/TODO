@@ -1,4 +1,4 @@
 - Add a configuration class to handle method level security
 - make a filter method with different attributes with JPASpecificationFilter
-- Adding soft delete to Categories and users
+- Adding soft ete to Categories and users
 - Adding Pagination to user classes, categories maybe
