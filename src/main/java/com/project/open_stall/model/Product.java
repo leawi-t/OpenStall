@@ -22,7 +22,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "product")
-@SQLRestriction("active = true")
 public class Product extends BaseEntity {
 
     @Id

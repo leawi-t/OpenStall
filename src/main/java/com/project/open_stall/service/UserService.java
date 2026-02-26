@@ -15,8 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -35,8 +33,6 @@ public class UserService {
         return userMapper.toDetail(userRepo.findById(id).
                 orElseThrow(()-> new ResourceNotFoundException("User with " + id + " does not exist")));
     }
-
-    // TODO: Instead of just username probably better to create a filter
 
     public UserDetailDto searchUser(String userName){
         return userMapper.toDetail(userRepo.findByUserName(userName)

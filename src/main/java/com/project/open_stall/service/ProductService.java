@@ -13,14 +13,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
-
-// TODO: make a filter method with different attributes with JPASpecificationFilter
 
 @Service
 @RequiredArgsConstructor
@@ -33,13 +32,13 @@ public class ProductService {
 
     @PreAuthorize("hasRole('ADMIN')")
     public Page<ProductResponseDto> getAllProducts(Pageable pageable) {
-        Page<Product> products = productRepo.getAllProducts(pageable);
+        Page<Product> products = productRepo.findAll(pageable);
         return products.map(productMapper::toResponse);
     }
 
     public Page<ProductResponseDto> getAllActiveProducts(Pageable pageable){
-        Page<Product> products = productRepo.findAll(pageable);
-        return products.map(productMapper::toResponse);
+        Specification<Product> spec = Specification.where(ProductSpecs.isActive());
+        return productRepo.findAll(spec, pageable).map(productMapper::toResponse);
     }
 
     public ProductDetailDto getProductById(long productId){
@@ -50,12 +49,13 @@ public class ProductService {
         return productMapper.toDetail(product);
     }
 
-    public Page<ProductResponseDto> filter(String name, String model, BigDecimal salePrice, Pageable pageable) {
-        Page<Product> products = productRepo.findByNameAndModelTrueAndSalePriceGreaterThan(name, model,
-                salePrice, pageable);
-
-        return products.map(productMapper::toResponse);
-
+    public Page<ProductResponseDto> filter(String name, String model, BigDecimal salePrice, long categoryId, Pageable pageable) {
+        Specification<Product> spec = Specification.where(ProductSpecs.isActive())
+                .and(ProductSpecs.hasName(name))
+                .and(ProductSpecs.hasModel(model))
+                .and(ProductSpecs.maxPrice(salePrice))
+                .and(ProductSpecs.hasCategory(categoryId));
+        return productRepo.findAll(spec, pageable).map(productMapper::toResponse);
     }
 
     @Transactional
@@ -82,6 +82,8 @@ public class ProductService {
         if (product.getSupplierProfile().getUser().getId() != userId) {
             throw new InvalidOperationException("Not Authorized to update the product");
         }
+
+        if (!product.isActive()) throw new ResourceNotFoundException("The Product does not exist");
 
         productMapper.updateEntity(dto, product);
 
