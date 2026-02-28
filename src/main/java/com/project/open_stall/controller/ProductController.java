@@ -12,9 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.List;
-
-//TODO: Instead of deleting set boolean active = false
 
 @RestController
 @RequiredArgsConstructor
@@ -45,7 +42,7 @@ public class ProductController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String model,
             @RequestParam(required = false) BigDecimal salePrice,
-            @RequestParam(required = false) long categoryId,
+            @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String description,
             Pageable pageable
     ){

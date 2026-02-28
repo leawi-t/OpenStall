@@ -29,5 +29,6 @@ public class Address {
 
     @OneToOne
     @MapsId
+    @JoinColumn(name = "supplier_id")
     private SupplierProfile supplierProfile;
 }

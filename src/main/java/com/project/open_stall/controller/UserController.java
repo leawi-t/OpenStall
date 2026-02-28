@@ -27,7 +27,7 @@ public class UserController {
         return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
     }
 
-    @GetMapping("/{userid}")
+    @GetMapping("/{userId}")
     public ResponseEntity<UserDetailDto> getUserById(@PathVariable long userId){
         return new ResponseEntity<>(service.getUserById(userId), HttpStatus.OK);
     }

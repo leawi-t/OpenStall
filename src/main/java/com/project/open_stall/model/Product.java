@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -73,7 +72,7 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "supplier_id", nullable = false)
     private SupplierProfile supplierProfile;
 
-    public void addCategory(Category category){
+    public void setCategory(Category category){
         categories.add(category);
         Set<Product> products = category.getProducts();
         products.add(this);

@@ -42,10 +42,9 @@ public class SupplierProfile {
 
     @NotNull
     @ElementCollection
-    @Size(min = 1, message = "suppliers must include at least one social media platform link")
-    @CollectionTable(name = "social_media_links", joinColumns = @JoinColumn(name = "supplier_id"))
+    @CollectionTable(joinColumns = @JoinColumn(name = "supplier_id"))
     @Valid
-    List<SocialMediaLink> socialMediaLinks;
+    List<SocialMediaLink> socialMediaLinks = new ArrayList<>();
 
     public void setAddress(Address address) {
         this.address = address;

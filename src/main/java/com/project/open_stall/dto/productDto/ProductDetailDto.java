@@ -17,6 +17,7 @@ public record ProductDetailDto(
         BigDecimal salePrice,
         List<ProductImageDto> productImages,
         List<CategoryResponseDto> categories,
+        List<String> tags,
         SupplierProfileResponseDto supplierProfile
 ) {
 }

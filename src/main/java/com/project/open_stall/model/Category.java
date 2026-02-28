@@ -23,7 +23,7 @@ public class Category extends BaseEntity {
     private long id;
 
     @NotBlank(message = "first name can not be blank")
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String name;
 
     @Size(max = 2000)

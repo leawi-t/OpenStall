@@ -58,6 +58,13 @@ public class UserService {
                 user.setSupplierProfile(null);
         }
 
+        else{
+            if (dto.supplierProfile() != null)
+                throw new InvalidOperationException("Consumer roles can not have Supplier Profiles");
+            else
+                user.setSupplierProfile(null);
+        }
+
         User savedUser = userRepo.save(user);
         return userMapper.toDetail(savedUser);
     }
@@ -82,6 +89,10 @@ public class UserService {
     public UserDetailDto addSupplierProfile(SupplierProfileRequestDto dto, long userId) {
         User user = userRepo.findById(userId).
                 orElseThrow(() -> new ResourceNotFoundException("User with " + userId + " does not exist"));
+
+        if (user.getRole() == Role.SUPPLIER){
+            throw new InvalidOperationException("Already have an associated Supplier profile");
+        }
 
         user.setRole(Role.valueOf("SUPPLIER"));
         user.setSupplierProfile(profileMapper.toEntity(dto));

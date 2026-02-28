@@ -50,7 +50,7 @@ public class ProductService {
     }
 
     public Page<ProductResponseDto> filter(String name, String model, BigDecimal salePrice,
-                                           long categoryId, String description, Pageable pageable) {
+                                           Long categoryId, String description, Pageable pageable) {
         Specification<Product> spec = Specification.where(ProductSpecs.isActive())
                 .and(ProductSpecs.hasName(name))
                 .and(ProductSpecs.hasModel(model))
@@ -89,7 +89,7 @@ public class ProductService {
 
         productMapper.updateEntity(dto, product);
 
-        List<Category> categories = categoryRepo.findAllById(dto.categoryId());
+        List<Category> categories = categoryRepo.findAllById(dto.categoryIds());
         product.getCategories().clear();
 
         product.setCategories(new HashSet<>(categories));

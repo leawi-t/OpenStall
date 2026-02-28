@@ -32,7 +32,7 @@ public record ProductUpdateDto(
         List<ProductImage> productImages,
 
         @Size(min = 1, max = 10)
-        List<Long> categoryId,
+        List<Long> categoryIds,
 
         @Size(min = 1, max = 10)
         List<String> tags
