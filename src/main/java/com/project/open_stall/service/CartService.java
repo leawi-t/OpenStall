@@ -3,6 +3,7 @@ package com.project.open_stall.service;
 import com.project.open_stall.dto.cartDto.CartResponseDto;
 import com.project.open_stall.dto.cartItemDto.CartItemRequestDto;
 import com.project.open_stall.dto.cartItemDto.CartItemResponseDto;
+import com.project.open_stall.dto.cartItemDto.CartItemUpdateDto;
 import com.project.open_stall.exception.InsufficientStockException;
 import com.project.open_stall.exception.ResourceNotFoundException;
 import com.project.open_stall.mapper.CartItemMapper;
@@ -82,6 +83,24 @@ public class CartService {
     }
 
     @Transactional
+    public CartResponseDto updateCartItem(long userId, long productId, CartItemUpdateDto dto){
+        Cart cart = getCartEntity(userId);
+        CartItem item = cart.getItems().stream()
+                .filter(x->x.getProduct().getId() == productId)
+                .findFirst()
+                .orElseThrow(()-> new ResourceNotFoundException("The item does not exist"));
+
+        Product product = productRepo.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+        if (product.getStockQuantity() < dto.quantity())
+            throw new InsufficientStockException("Product: " + product.getId() + " has Insufficient stock. Available: " + product.getStockQuantity() + " requested: " + dto.quantity());
+
+        item.setQuantity(dto.quantity());
+        return mapper.toResponse(cart);
+    }
+
+    @Transactional
     public CartResponseDto removeCartItem(long userId, long productId){
         Cart cart = getCartEntity(userId);
 
@@ -95,6 +114,4 @@ public class CartService {
         cart.getItems().clear();
         return mapper.toResponse(cart);
     }
-
-
 }
