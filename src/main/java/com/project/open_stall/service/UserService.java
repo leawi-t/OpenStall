@@ -5,6 +5,7 @@ import com.project.open_stall.dto.userDto.*;
 import com.project.open_stall.exception.*;
 import com.project.open_stall.mapper.SupplierProfileMapper;
 import com.project.open_stall.mapper.UserMapper;
+import com.project.open_stall.model.Cart;
 import com.project.open_stall.model.Role;
 import com.project.open_stall.model.User;
 import com.project.open_stall.repo.UserRepo;
@@ -50,6 +51,8 @@ public class UserService {
         }
 
         User user = userMapper.toEntity(dto);
+        Cart cart = new Cart();
+        user.setCart(cart);
 
         if (dto.role().equalsIgnoreCase("Supplier")){
             if (dto.supplierProfile() == null)

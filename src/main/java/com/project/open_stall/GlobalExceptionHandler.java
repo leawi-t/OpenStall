@@ -1,5 +1,6 @@
 package com.project.open_stall;
 
+import com.project.open_stall.exception.InsufficientStockException;
 import com.project.open_stall.exception.InvalidOperationException;
 import com.project.open_stall.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidOperationException.class)
-    public ResponseEntity<CustomErrorResponse> InvalidOperationExceptionHandler(InvalidOperationException ex){
+    public ResponseEntity<CustomErrorResponse> handleInvalidOperationExceptionHandler(InvalidOperationException ex){
         CustomErrorResponse errorResponse = new CustomErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), "Invalid Operation Exception", ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<CustomErrorResponse> handleInsufficientStockException(InsufficientStockException ex){
+        CustomErrorResponse errorResponse = new CustomErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), "Insufficient Stock Exception", ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
