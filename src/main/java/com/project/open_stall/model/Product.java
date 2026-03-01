@@ -28,7 +28,7 @@ public class Product extends BaseEntity {
     private long id;
 
     @NotBlank(message = "Product name can not be blank")
-    @Size(max = 255)
+    @Size(max = 50)
     private String name;
 
     @NotBlank(message = "Description of the product can not be blank")

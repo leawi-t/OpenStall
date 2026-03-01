@@ -1,5 +1,5 @@
 - Add a configuration class to handle method level security
-- Adding soft delete to Categories and users
+- Adding soft delete to users and also remove personal information
 - Adding Pagination to user classes, categories maybe
 - add proper testing and maybe learn how to have a separate h2 database for testing.
 - learn about separate profiles and using integration testing by adding a test class in src/test/java

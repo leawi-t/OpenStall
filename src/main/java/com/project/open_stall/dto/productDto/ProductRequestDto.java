@@ -12,7 +12,7 @@ import java.util.List;
 
 public record ProductRequestDto(
         @NotBlank
-        @Size(max = 100, message = "Product name can be at max 100 characters")
+        @Size(max = 50, message = "Product name can be at max 50 characters")
         String name,
 
         @NotBlank
