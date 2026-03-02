@@ -10,6 +10,9 @@ import com.project.open_stall.repo.OrderRepo;
 import com.project.open_stall.repo.UserRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +31,25 @@ public class OrderService {
     private final CartService cartService;
 
     @PreAuthorize("hasRole(Admin)")
-    public List<OrderResponseDto> getAllOrders(long userId){
-        return orderMapper.toResponseList(orderRepo.findByUserId(userId));
+    public Page<OrderResponseDto> getAllOrders(Pageable pageable){
+        return orderRepo.findAll(pageable).map(orderMapper::toResponse);
+    }
+
+    public Page<OrderResponseDto> getAllOrdersByUser(long userId, Pageable pageable) {
+        Specification<Order> spec = Specification.where(OrderSpecs.hasUserId(userId));
+        return orderRepo.findAll(spec, pageable).map(orderMapper::toResponse);
+    }
+
+    @PreAuthorize("hasRole(Admin)")
+    public Page<OrderResponseDto> filter(Pageable pageable, long userId, BigDecimal min,
+                                         BigDecimal max, String status, LocalDateTime start, LocalDateTime end){
+
+        Specification<Order> spec = Specification.where(OrderSpecs.hasUserId(userId))
+                .and(OrderSpecs.hasStatus(OrderStatus.valueOf(status)))
+                .and(OrderSpecs.createdBetween(start, end))
+                .and(OrderSpecs.hasTotalAmountBetween(min, max));
+
+        return  orderRepo.findAll(spec, pageable).map(orderMapper::toResponse);
     }
 
     public OrderDetailsDto getOrderById(long userId, long orderId){

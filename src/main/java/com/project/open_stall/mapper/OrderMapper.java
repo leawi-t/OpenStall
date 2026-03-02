@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = OrderItemMapper.class)
 public interface OrderMapper {
 
-    List<OrderResponseDto> toResponseList(List<Order> order);
+    OrderResponseDto toResponse(Order order);
 
     OrderDetailsDto toDetails(Order order);
 }
