@@ -18,9 +18,4 @@ public interface CartItemMapper {
     CartItemResponseDto toResponse(CartItem item);
 
     List<CartItemResponseDto> toResponseList(List<CartItem> items);
-
-    CartItem toEntity(CartItemRequestDto dto);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntity(CartItemUpdateDto dto, @MappingTarget CartItem items);
 }
