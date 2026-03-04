@@ -1,9 +1,15 @@
 package com.project.open_stall.config;
 
-import com.project.open_stall.model.*;
-import com.project.open_stall.repo.CategoryRepo;
-import com.project.open_stall.repo.ProductRepo;
-import com.project.open_stall.repo.UserRepo;
+import com.project.open_stall.category.Category;
+import com.project.open_stall.product.model.Product;
+import com.project.open_stall.category.CategoryRepo;
+import com.project.open_stall.product.ProductRepo;
+import com.project.open_stall.supplierProfile.model.Address;
+import com.project.open_stall.supplierProfile.model.SocialMediaLink;
+import com.project.open_stall.supplierProfile.model.SupplierProfile;
+import com.project.open_stall.user.Role;
+import com.project.open_stall.user.UserRepo;
+import com.project.open_stall.user.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
