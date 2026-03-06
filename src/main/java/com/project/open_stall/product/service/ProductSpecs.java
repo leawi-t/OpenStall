@@ -8,8 +8,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class ProductSpecs {
-    public static Specification<Product> isActive(){
-        return ((root, query, cb) -> cb.equal(root.get("active"), true));
+    public static Specification<Product> isActive(Boolean active){
+        return (root, query, cb) -> {
+            if (active == null) return null;
+            return cb.equal(root.get("active"), active);
+        };
     }
 
     public static Specification<Product> hasName(String name){
@@ -29,7 +32,7 @@ public class ProductSpecs {
     public static Specification<Product> hasDescription(String description){
         return ((root, query, cb) -> {
             if (description == null || description.isEmpty()) return null;
-            return cb.like(cb.lower(root.get("model")), '%' + description.toLowerCase() + '%');
+            return cb.like(cb.lower(root.get("description")), '%' + description.toLowerCase() + '%');
         });
     }
 

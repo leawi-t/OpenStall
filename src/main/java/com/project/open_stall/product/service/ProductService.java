@@ -32,7 +32,7 @@ public class ProductService {
 
     @PreAuthorize("hasRole('ADMIN')")
     public Page<ProductResponseDto> getProducts(@Valid ProductFilterDto dto, Pageable pageable) {
-        Specification<Product> spec = Specification.where(ProductSpecs.isActive())
+        Specification<Product> spec = Specification.where(ProductSpecs.isActive(dto.active()))
                 .and(ProductSpecs.hasName(dto.name()))
                 .and(ProductSpecs.hasModel(dto.model()))
                 .and(ProductSpecs.hasPrice(dto.min(), dto.max()))

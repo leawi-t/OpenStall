@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record ProductFilterDto(
-        boolean active,
+        Boolean active,
 
         @Size(max = 100, message = "Name can't be longer than 100 characters")
         String name,

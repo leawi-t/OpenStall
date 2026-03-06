@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 @RequestMapping("/api/orders")
 public class OrderController {
 
+    // TODO: fix the endpoints when security is added
+
     private final OrderService service;
 
     @GetMapping
