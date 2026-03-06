@@ -24,8 +24,6 @@ public class CategoryService {
 
     private final CategoryRepo categoryRepo;
     private final CategoryMapper categoryMapper;
-    private final ProductMapper productMapper;
-    private final ProductRepo productRepo;
 
     public List<CategoryResponseDto> getAllCategories(){
         return categoryMapper.toResponseList(categoryRepo.findAll());
@@ -37,13 +35,6 @@ public class CategoryService {
 
     public List<CategoryResponseDto> searchCategory(String keyword){
         return categoryMapper.toResponseList(categoryRepo.searchCategory(keyword));
-    }
-
-    public Page<ProductResponseDto> getProductsByCategory(long categoryId, Pageable pageable){
-        Category category = categoryRepo.findById(categoryId).
-                orElseThrow(() -> new ResourceNotFoundException("Category with id: " + categoryId + " was not found"));
-        Page<Product> products = productRepo.findByCategoryId(categoryId, pageable);
-        return products.map(productMapper::toResponse);
     }
 
     @Transactional

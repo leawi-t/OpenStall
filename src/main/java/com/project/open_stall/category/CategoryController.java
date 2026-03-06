@@ -4,12 +4,8 @@ import com.project.open_stall.category.dto.CategoryDetailDto;
 import com.project.open_stall.category.dto.CategoryRequestDto;
 import com.project.open_stall.category.dto.CategoryResponseDto;
 import com.project.open_stall.category.dto.CategoryUpdateDto;
-import com.project.open_stall.product.dto.ProductResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +20,12 @@ public class CategoryController {
     private final CategoryService service;
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDto>> getAllCategories(){
-        return new ResponseEntity<>(service.getAllCategories(), HttpStatus.OK);
+    public ResponseEntity<List<CategoryResponseDto>> getCategories(
+            @RequestParam(required = false) String keyword) {
+        if (keyword != null) {
+            return ResponseEntity.ok(service.searchCategory(keyword));
+        }
+        return ResponseEntity.ok(service.getAllCategories());
     }
 
     @GetMapping("/{categoryId}")
@@ -33,18 +33,7 @@ public class CategoryController {
         return new ResponseEntity<>(service.getCategoryById(categoryId), HttpStatus.OK);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<CategoryResponseDto>> searchCategory(@RequestParam String keyword){
-        return new ResponseEntity<>(service.searchCategory(keyword), HttpStatus.OK);
-    }
-
-    @GetMapping("/{categoryId}/products")
-    public ResponseEntity<PagedModel<ProductResponseDto>> getProductsByCategory(@PathVariable long categoryId, Pageable pageable){
-        Page<ProductResponseDto> page = service.getProductsByCategory(categoryId, pageable);
-        return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
-    }
-
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<CategoryDetailDto> addCategory(@RequestBody @Valid CategoryRequestDto dto){
         return new ResponseEntity<>(service.addCategory(dto), HttpStatus.CREATED);
     }
@@ -62,5 +51,4 @@ public class CategoryController {
         service.deleteCategory(categoryId);
         return ResponseEntity.noContent().build();
     }
-
 }
