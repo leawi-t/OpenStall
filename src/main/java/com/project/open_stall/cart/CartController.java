@@ -28,12 +28,6 @@ public class CartController {
         return ResponseEntity.ok(service.getCartItems(userId));
     }
 
-    @GetMapping("/{userId}/items/{productId}")
-    public ResponseEntity<CartItemResponseDto> getCartItemById(@PathVariable long userId,
-                                                               @PathVariable long productId){
-        return ResponseEntity.ok(service.getCartItem(userId, productId));
-    }
-
     @PostMapping("/{userId}/items")
     public ResponseEntity<CartResponseDto> addItemToCart(@PathVariable long userId,
                                                          @RequestBody @Valid CartItemRequestDto dto){

@@ -39,14 +39,6 @@ public class CartService {
         return itemMapper.toResponseList(cart.getItems());
     }
 
-    public CartItemResponseDto getCartItem(long userId, long productId){
-        Cart cart = getCartEntity(userId);
-        CartItem item = cart.getItems().stream()
-                .filter(x-> x.getProduct().getId() == productId).findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Cart item was not found"));
-        return itemMapper.toResponse(item);
-    }
-
     @Transactional
     public CartResponseDto addItemToCart(long userId, CartItemRequestDto dto) {
         Cart cart = getCartEntity(userId);
