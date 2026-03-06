@@ -6,10 +6,11 @@ import com.project.open_stall.order.OrderRepo;
 import com.project.open_stall.order.OrderService;
 import com.project.open_stall.order.model.Order;
 import com.project.open_stall.order.model.OrderStatus;
+import com.project.open_stall.product.ProductRepo;
 import com.project.open_stall.supplierProfile.SupplierProfileMapper;
 import com.project.open_stall.cart.model.Cart;
-import com.project.open_stall.supplierProfile.dto.SupplierProfileDetailsDto;
 import com.project.open_stall.supplierProfile.dto.SupplierProfileRequestDto;
+import com.project.open_stall.supplierProfile.dto.SupplierProfileResponseDto;
 import com.project.open_stall.supplierProfile.dto.SupplierProfileUpdateDto;
 import com.project.open_stall.user.dto.UserDetailDto;
 import com.project.open_stall.user.dto.UserRequestDto;
@@ -35,8 +36,9 @@ public class UserService {
     private final SupplierProfileMapper profileMapper;
     private final OrderService orderService;
     private final OrderRepo orderRepo;
+    private final ProductRepo productRepo;
 
-    // Can I preauthorize some of the filters for the admin like active == null or false? or should I create a separate method where I use @Preauthorize and make the active parameter always true for this method
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<UserResponseDto> getUsers(Pageable pageable, Boolean active, String email,
                                           String username, LocalDateTime start, LocalDateTime end) {
         Specification<User> spec = Specification.where(UserSpecs.isActive(active))
@@ -47,10 +49,8 @@ public class UserService {
         return userRepo.findAll(spec, pageable).map(userMapper::toResponse);
     }
 
-    //should I Use a method like findByIdAndActive here?
-    public UserResponseDto getUserById(long userId){
-        return userMapper.toResponse(userRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found")));
+    public SupplierProfileResponseDto getUserById(long userId){
+        return profileMapper.toResponse(userRepo.findById(userId).get().getSupplierProfile());
     }
 
     @Transactional
@@ -71,7 +71,7 @@ public class UserService {
             if (dto.supplierProfile() == null)
                 throw new InvalidOperationException("Supplier profile data is required for Supplier role");
             else
-                user.setSupplierProfile(null);
+                user.setSupplierProfile(profileMapper.toEntity(dto.supplierProfile()));
         }
 
         else{
@@ -110,6 +110,10 @@ public class UserService {
             throw new InvalidOperationException("Already have an associated Supplier profile");
         }
 
+        if (user.getRole() == Role.ADMIN){
+            throw new InvalidOperationException("Admins can not have a Supplier profile");
+        }
+
         user.setRole(Role.valueOf("SUPPLIER"));
         user.setSupplierProfile(profileMapper.toEntity(dto));
 
@@ -118,12 +122,12 @@ public class UserService {
 
     @Transactional
     @PreAuthorize("hasRole('SUPPLIER')")
-    public SupplierProfileDetailsDto updateSupplierProfile(SupplierProfileUpdateDto dto, long userId){
+    public SupplierProfileResponseDto updateSupplierProfile(SupplierProfileUpdateDto dto, long userId){
         User user = userRepo.findById(userId).
                 orElseThrow(() -> new ResourceNotFoundException("User with " + userId + " does not exist"));
 
         profileMapper.updateEntity(dto, user.getSupplierProfile());
-        return profileMapper.toDetails(user.getSupplierProfile());
+        return profileMapper.toResponse(user.getSupplierProfile());
     }
 
     @Transactional
@@ -137,15 +141,15 @@ public class UserService {
     }
 
     @Transactional
-    public void softDeleteUser(long userId){
+    public void softDeleteUser(long userId) {
         User user = userRepo.findById(userId).
                 orElseThrow(() -> new ResourceNotFoundException("User with " + userId + " does not exist"));
 
         user.setActive(false);
 
-        LocalDateTime deletedAt = LocalDateTime.now();
-        user.setUserName(user.getUserName() + deletedAt);
-        user.setEmail(user.getUserName() + deletedAt);
+        String deletedSuffix = "_del_" + userId;
+        user.setUserName(user.getUserName() + deletedSuffix);
+        user.setEmail("deleted_" + userId + "@openstall.com");
 
         if (user.getCart() != null) {
             user.getCart().getItems().clear();
@@ -161,6 +165,7 @@ public class UserService {
         for (Order order : orders) {
             orderService.cancelOrder(userId, order.getId());
         }
-    }
 
+        userRepo.save(user);
+    }
 }

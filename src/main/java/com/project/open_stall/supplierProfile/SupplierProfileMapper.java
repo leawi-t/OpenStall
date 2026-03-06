@@ -1,6 +1,5 @@
 package com.project.open_stall.supplierProfile;
 
-import com.project.open_stall.supplierProfile.dto.SupplierProfileDetailsDto;
 import com.project.open_stall.supplierProfile.dto.SupplierProfileRequestDto;
 import com.project.open_stall.supplierProfile.dto.SupplierProfileResponseDto;
 import com.project.open_stall.supplierProfile.dto.SupplierProfileUpdateDto;
@@ -18,8 +17,6 @@ public interface SupplierProfileMapper {
     SupplierProfileResponseDto toResponse(SupplierProfile supplierProfile);
 
     List<SupplierProfileResponseDto> toResponseList(List<SupplierProfile> supplierProfiles);
-
-    SupplierProfileDetailsDto toDetails(SupplierProfile supplierProfile);
 
     SupplierProfile toEntity(SupplierProfileRequestDto dto);
 

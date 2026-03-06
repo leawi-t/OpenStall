@@ -1,106 +1,153 @@
 package com.project.open_stall.config;
 
+import com.project.open_stall.cart.CartService;
+import com.project.open_stall.cart.dto.CartItemDto.CartItemRequestDto;
 import com.project.open_stall.category.Category;
+import com.project.open_stall.order.OrderService;
+import com.project.open_stall.order.dto.orderDto.OrderDetailsDto;
+import com.project.open_stall.order.model.AddressSnapshot;
+import com.project.open_stall.product.dto.ProductRequestDto;
 import com.project.open_stall.product.model.Product;
 import com.project.open_stall.category.CategoryRepo;
 import com.project.open_stall.product.ProductRepo;
+import com.project.open_stall.product.service.ProductService;
+import com.project.open_stall.product.service.ProductSpecs;
+import com.project.open_stall.supplierProfile.SupplierProfileMapper;
+import com.project.open_stall.supplierProfile.dto.AddressDto;
+import com.project.open_stall.supplierProfile.dto.SupplierProfileRequestDto;
 import com.project.open_stall.supplierProfile.model.Address;
 import com.project.open_stall.supplierProfile.model.SocialMediaLink;
 import com.project.open_stall.supplierProfile.model.SupplierProfile;
-import com.project.open_stall.user.Role;
-import com.project.open_stall.user.UserRepo;
-import com.project.open_stall.user.User;
+import com.project.open_stall.user.*;
+import com.project.open_stall.user.dto.UserDetailDto;
+import com.project.open_stall.user.dto.UserRequestDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
-@Configuration
+@Component
 @RequiredArgsConstructor
-public class DataInitializer {
+@Profile("!test")
+public class DataInitializer implements CommandLineRunner {
 
-    private final UserRepo userRepository;
+    private final UserRepo userRepo;
+    private final UserService userService;
     private final CategoryRepo categoryRepo;
     private final ProductRepo productRepo;
+    private final CartService cartService;
+    private final OrderService orderService;
+    private final SupplierProfileMapper supplierProfileMapper;
 
-    @Bean
+    @Override
     @Transactional
-    CommandLineRunner initData() {
-        return args -> {
-            //To initialize dummy data
+    public void run(String... args) throws Exception {
+        if (userRepo.count() == 0) {
+            System.out.println("--- Starting OpenStall Data Initialization ---");
 
-            if (userRepository.count()==0) {
+            // 1. Create Categories
+            Category electronics = new Category();
+            electronics.setName("Electronics");
+            electronics.setDescription("Gadgets and tech");
+            categoryRepo.save(electronics);
 
-                Category electronics = new Category();
-                electronics.setName("Electronics");
-                electronics.setDescription("Gadgets and gizmos");
-                categoryRepo.save(electronics);
+            Category home = new Category();
+            home.setName("Home & Kitchen");
+            home.setDescription("Everything for your house");
+            categoryRepo.save(home);
 
-                Category home = new Category();
-                home.setName("Home & Kitchen");
-                home.setDescription("Everything for your house");
-                categoryRepo.save(home);
+            AddressDto address = new AddressDto("Ethiopia", "Addis Ababa", "Bole");
 
-                // 2. Create a Supplier
-                User supplier = new User();
-                supplier.setFirstName("John");
-                supplier.setLastName("Doe");
-                supplier.setUserName("johndoe_shop");
-                supplier.setEmail("john@example.com");
-                supplier.setPassword("Password123!"); // to be encoded
-                supplier.setRole(Role.SUPPLIER);
+            List<SocialMediaLink> links = new ArrayList<>(Arrays.asList(new SocialMediaLink("Telegram", "...")));
 
-                SupplierProfile profile = new SupplierProfile();
-                profile.setCompanyName("John's Tech Stall");
-                profile.setBio("Best tech in town");
+            // 2. Register a Supplier (Using the DTO and Service to test logic)
+            SupplierProfileRequestDto profileDto = new SupplierProfileRequestDto(
+                    "Tech Haven",
+                    "Best gadgets in Addis",
+                    address, links
+            );
 
-                Address address = new Address();
-                address.setCountry("Ethiopia");
-                address.setCity("Bole, Lemmi");
-                address.setState("Addis Ababa");
+            UserRequestDto supplierDto = new UserRequestDto(
+                    "John", "Doe", "john_supplier", "John123!", "john@gmail.com", "SUPPLIER", profileDto
+            );
 
-                profile.setAddress(address);
+            UserDetailDto supplier = userService.registerUser(supplierDto);
+            System.out.println("✅ Supplier Registered: " + supplier.userName());
 
-                SocialMediaLink socialMediaLink = new SocialMediaLink();
-                socialMediaLink.setPlatform("telegram");
-                socialMediaLink.setUrl("...");
+            // 3. Register a Consumer
+            UserRequestDto consumerDto = new UserRequestDto(
+                    "Jane", "Smith", "jane_buyer", "Jane123!", "jane@gamil.com", "CONSUMER", null
+            );
+            UserDetailDto consumer = userService.registerUser(consumerDto);
+            System.out.println("✅ Consumer Registered: " + consumer.userName());
 
-                profile.getSocialMediaLinks().add(socialMediaLink);
+            User managedSupplier = userRepo.findById(supplier.id())
+                    .orElseThrow(() -> new RuntimeException("Supplier not found"));
 
-                supplier.setSupplierProfile(profile);
-                userRepository.save(supplier);
+            SupplierProfile managedProfile = managedSupplier.getSupplierProfile();
+            System.out.println("Supplier Profile ID: " + managedProfile.getId());
 
-                // 3. Create Products
-                Product phone = new Product();
-                phone.setName("StallPhone 15");
-                phone.setModel("Pro Max");
-                phone.setDescription("Iphone Pro max brand new case not opened");
-                phone.setSalePrice(new BigDecimal("999.99"));
-                phone.setSupplierCost(new BigDecimal("700.00"));
-                phone.setStockQuantity(50);
-                phone.setActive(true);
-                phone.setSupplierProfile(profile);
-                phone.setCategories(Set.of(electronics));
-                productRepo.save(phone);
+            // 4. Add Products to the Supplier's Profile
+            Product phone = new Product();
+            phone.setName("StallPhone 15");
+            phone.setDescription("Good phone");
+            phone.setModel("StallPhone");
+            phone.setSalePrice(new BigDecimal("1000.00"));
+            phone.setSupplierCost(new BigDecimal("700.00"));
+            phone.setStockQuantity(10);
+            phone.setActive(true);
+            phone.setCategories(Set.of(electronics));
+            phone.setSupplierProfile(managedProfile);
+            productRepo.save(phone);
+            managedProfile.addProduct(phone);
 
-                Product toaster = new Product();
-                toaster.setName("ToastMaster 3000");
-                toaster.setModel("X-Chrome");
-                toaster.setDescription("Works like a charm");
-                toaster.setSalePrice(new BigDecimal("49.99"));
-                toaster.setSupplierCost(new BigDecimal("20.00"));
-                toaster.setStockQuantity(10);
-                toaster.setActive(false);
-                toaster.setSupplierProfile(profile);
-                toaster.setCategories(Set.of(home));
-                productRepo.save(toaster);
+            Product blender = new Product();
+            blender.setName("SmoothieMaker Pro");
+            blender.setDescription("great blender");
+            blender.setModel("Blender");
+            blender.setSalePrice(new BigDecimal("50.00"));
+            blender.setSupplierCost(new BigDecimal("20.00"));
+            blender.setStockQuantity(5);
+            blender.setActive(true);
+            blender.setSupplierProfile(managedProfile);
+            blender.setCategories(Set.of(home));
+            productRepo.save(blender);
+            managedProfile.addProduct(blender);
+            System.out.println("✅ Products Created and Linked to Supplier.");
 
-                System.out.println("Dummy data initialized!");
-            }
-        };
+            // 5. Test Cart Logic: Add items to Jane's Cart
+            cartService.addItemToCart(consumer.id(), new CartItemRequestDto(2, phone.getId())); // 2 phones
+            cartService.addItemToCart(consumer.id(), new CartItemRequestDto(1, blender.getId())); // 1 blender
+            System.out.println("✅ Items added to Jane's Cart. Checking stock...");
+
+            // 6. Test Order Logic: Create an Order (Snapshotting)
+            AddressSnapshot shipping = new AddressSnapshot("Ethiopia", "Addis Ababa", "Kazanchis");
+            OrderDetailsDto order = orderService.createOrder(consumer.id(), shipping);
+            System.out.println("🚀 Order Placed! ID: " + order.id() + " Total: " + order.totalAmount());
+
+            // Verify Stock Decrement
+            Product updatedPhone = productRepo.findById(phone.getId()).get();
+            System.out.println("📉 Phone Stock after order (Should be 8): " + updatedPhone.getStockQuantity());
+
+            // 7. Test Soft Delete
+            userService.softDeleteUser(supplier.id());
+            System.out.println("⚠️ Supplier soft-deleted. Checking product status...");
+
+            Product deletedSupplierProduct = productRepo.findById(phone.getId())
+                    .orElseThrow(() -> new RuntimeException("Product lost!"));
+
+            System.out.println("🚫 Is Product active? (Should be false): " + deletedSupplierProduct.isActive());
+
+            System.out.println("--- Full Flow Test Complete ---");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.project.open_stall.user;
 
+import com.project.open_stall.product.mapper.ProductMapper;
 import com.project.open_stall.supplierProfile.SupplierProfileMapper;
 import com.project.open_stall.user.dto.UserDetailDto;
 import com.project.open_stall.user.dto.UserRequestDto;
@@ -12,7 +13,7 @@ import java.util.List;
 // TODO: Maybe add after mapping to ensure that the supplierProfile is associated with the user
 // TODO: Make a way to delete the supplierProfile if it is null
 
-@Mapper(componentModel = "spring", uses = {SupplierProfileMapper.class})
+@Mapper(componentModel = "spring", uses = {SupplierProfileMapper.class, ProductMapper.class})
 public interface UserMapper {
 
     List<UserResponseDto> toResponseList(List<User> users);

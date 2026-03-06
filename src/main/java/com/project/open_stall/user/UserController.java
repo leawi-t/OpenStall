@@ -4,13 +4,12 @@ import com.project.open_stall.supplierProfile.dto.*;
 import com.project.open_stall.user.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.lang.annotation.DeclareWarning;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -25,6 +24,7 @@ public class UserController {
     private final UserService service;
 
     @GetMapping
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<PagedModel<UserResponseDto>> getUser(
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) String email,
@@ -35,6 +35,11 @@ public class UserController {
     ){
         Page<UserResponseDto> page = service.getUsers(pageable, active, email, username, start, end);
         return ResponseEntity.ok(new PagedModel<>(page));
+    }
+
+    @GetMapping("/supplierProfile/{userId}")
+    public ResponseEntity<SupplierProfileResponseDto> getSupplierById(@PathVariable long userId){
+        return ResponseEntity.ok(service.getUserById(userId));
     }
 
     @PostMapping
@@ -65,7 +70,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/supplierProfile")
-    public ResponseEntity<SupplierProfileDetailsDto> updateSupplierProfile(
+    public ResponseEntity<SupplierProfileResponseDto> updateSupplierProfile(
             @RequestBody @Valid SupplierProfileUpdateDto dto,
             @PathVariable long userId
     ){

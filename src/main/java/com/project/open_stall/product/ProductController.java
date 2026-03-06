@@ -11,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
@@ -21,29 +19,17 @@ public class ProductController {
     private final ProductService service;
 
     @GetMapping
-    public ResponseEntity<PagedModel<ProductResponseDto>> getAllProducts(Pageable pageable) {
-        Page<ProductResponseDto> page = service.getAllProducts(pageable);
-        return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
-    }
-
-    @GetMapping("/active")
-    public ResponseEntity<PagedModel<ProductResponseDto>> getAllActiveProducts(Pageable pageable){
-        Page<ProductResponseDto> page = service.getAllActiveProducts(pageable);
-        return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
+    public ResponseEntity<PagedModel<ProductResponseDto>> getProducts(
+            @RequestBody @Valid ProductFilterDto dto,
+            Pageable pageable
+    ){
+        Page<ProductResponseDto> page = service.getProducts(dto, pageable);
+        return ResponseEntity.ok(new PagedModel<>(page));
     }
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDetailDto> getProductById(@PathVariable long productId){
         return new ResponseEntity<>(service.getProductById(productId), HttpStatus.OK);
-    }
-
-    @GetMapping("/filter")
-    public ResponseEntity<PagedModel<ProductResponseDto>> filterProducts(
-            @RequestBody @Valid ProductFilterDto dto,
-            Pageable pageable
-    ){
-        Page<ProductResponseDto> page = service.filter(dto, pageable);
-        return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
     }
 
     @PostMapping("/user/{userId}")

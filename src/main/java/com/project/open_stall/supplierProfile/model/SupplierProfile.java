@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.parameters.P;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,13 @@ public class SupplierProfile {
         this.address = address;
         if (address != null) {
             address.setSupplierProfile(this);
+        }
+    }
+
+    public void addProduct(Product product){
+        products.add(product);
+        if (product != null) {
+            product.setSupplierProfile(this);
         }
     }
 }

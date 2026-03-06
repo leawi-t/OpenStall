@@ -17,4 +17,9 @@ public class SocialMediaLink {
     private String url;
 
     private boolean verified;
+
+    public SocialMediaLink(String platform, String url) {
+        this.platform = platform;
+        this.url = url;
+    }
 }
