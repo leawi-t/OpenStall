@@ -78,10 +78,11 @@ public class ProductService {
 
         productMapper.updateEntity(dto, product);
 
-        List<Category> categories = categoryRepo.findAllById(dto.categoryIds());
-        product.getCategories().clear();
-
-        product.setCategories(new HashSet<>(categories));
+        if(dto.categoryIds()!=null) {
+            List<Category> categories = categoryRepo.findAllById(dto.categoryIds());
+            product.getCategories().clear();
+            product.setCategories(new HashSet<>(categories));
+        }
 
         return productMapper.toDetail(productRepo.save(product));
     }

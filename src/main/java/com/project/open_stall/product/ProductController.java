@@ -39,12 +39,12 @@ public class ProductController {
         return new ResponseEntity<>(service.addProduct(dto), HttpStatus.CREATED);
     }
 
-    @PutMapping("{productId}")
+    @PutMapping("/{productId}")
     public ResponseEntity<ProductDetailDto> updateProduct(
             @RequestBody @Valid ProductUpdateDto dto,
             @PathVariable long productId
     ){
-        return new ResponseEntity<>(service.updateProduct(dto, productId), HttpStatus.CREATED);
+        return new ResponseEntity<>(service.updateProduct(dto, productId), HttpStatus.OK);
     }
 
     @DeleteMapping("/{productId}")

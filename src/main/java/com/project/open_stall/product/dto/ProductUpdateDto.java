@@ -20,7 +20,7 @@ public record ProductUpdateDto(
         String model,
 
         @Min(value = 1, message = "Can't add a product with stock quantity less than 1")
-        int stockQuantity,
+        Integer stockQuantity,
 
         @Min(value = 0, message = "Price can not be less than 0")
         BigDecimal salePrice,
