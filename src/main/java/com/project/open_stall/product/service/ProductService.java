@@ -3,10 +3,7 @@ package com.project.open_stall.product.service;
 import com.project.open_stall.category.CategoryRepo;
 import com.project.open_stall.common.exception.InvalidOperationException;
 import com.project.open_stall.common.exception.ResourceNotFoundException;
-import com.project.open_stall.product.dto.ProductDetailDto;
-import com.project.open_stall.product.dto.ProductRequestDto;
-import com.project.open_stall.product.dto.ProductResponseDto;
-import com.project.open_stall.product.dto.ProductUpdateDto;
+import com.project.open_stall.product.dto.*;
 import com.project.open_stall.product.mapper.ProductMapper;
 import com.project.open_stall.category.Category;
 import com.project.open_stall.product.model.Product;
@@ -53,14 +50,14 @@ public class ProductService {
         return productMapper.toDetail(product);
     }
 
-    public Page<ProductResponseDto> filter(String name, String model, BigDecimal min,
-                                           BigDecimal max, Long categoryId, String description, Pageable pageable) {
+    public Page<ProductResponseDto> filter(ProductFilterDto dto, Pageable pageable) {
         Specification<Product> spec = Specification.where(ProductSpecs.isActive())
-                .and(ProductSpecs.hasName(name))
-                .and(ProductSpecs.hasModel(model))
-                .and(ProductSpecs.hasPrice(min, max))
-                .and(ProductSpecs.hasCategory(categoryId))
-                .and(ProductSpecs.hasDescription(description));
+                .and(ProductSpecs.hasName(dto.name()))
+                .and(ProductSpecs.hasModel(dto.model()))
+                .and(ProductSpecs.hasPrice(dto.min(), dto.max()))
+                .and(ProductSpecs.hasCategory(dto.categoryId()))
+                .and(ProductSpecs.hasDescription(dto.description()))
+                .and(ProductSpecs.hasDate(dto.start(), dto.end()));
 
         return productRepo.findAll(spec, pageable).map(productMapper::toResponse);
     }

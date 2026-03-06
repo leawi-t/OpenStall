@@ -4,6 +4,7 @@ import com.project.open_stall.product.model.Product;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class ProductSpecs {
     public static Specification<Product> isActive(){
@@ -44,6 +45,15 @@ public class ProductSpecs {
         return (root, query, cb) -> {
             if (categoryId == null) return null;
             return cb.equal(root.join("categories").get("id"), categoryId);
+        };
+    }
+
+    public static Specification<Product> hasDate(LocalDateTime min, LocalDateTime max){
+        return (root, query, cb) -> {
+            if (min == null && max == null) return null;
+            if (min == null) return cb.lessThanOrEqualTo(root.get("createdAt"), max);
+            if (max == null) return cb.greaterThanOrEqualTo(root.get("createdAt"), min);
+            return cb.between(root.get("createdAt"), min ,max);
         };
     }
 }

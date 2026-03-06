@@ -1,9 +1,6 @@
 package com.project.open_stall.product;
 
-import com.project.open_stall.product.dto.ProductDetailDto;
-import com.project.open_stall.product.dto.ProductRequestDto;
-import com.project.open_stall.product.dto.ProductResponseDto;
-import com.project.open_stall.product.dto.ProductUpdateDto;
+import com.project.open_stall.product.dto.*;
 import com.project.open_stall.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,15 +39,10 @@ public class ProductController {
 
     @GetMapping("/filter")
     public ResponseEntity<PagedModel<ProductResponseDto>> filterProducts(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) BigDecimal min,
-            @RequestParam(required = false) BigDecimal max,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String description,
+            @RequestBody @Valid ProductFilterDto dto,
             Pageable pageable
     ){
-        Page<ProductResponseDto> page = service.filter(name, model, min, max, categoryId, description, pageable);
+        Page<ProductResponseDto> page = service.filter(dto, pageable);
         return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
     }
 
