@@ -1,6 +1,7 @@
 package com.project.open_stall.order;
 
 import com.project.open_stall.order.model.Order;
+import com.project.open_stall.order.model.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +16,7 @@ public interface OrderRepo extends JpaRepository<Order, Long>, JpaSpecificationE
 
     Page<Order> findAll(Pageable pageable);
 
-    List<Order> findByUserId(long userId);
+    List<Order> findByUserIdAndStatus(long userId, OrderStatus status);
 
     Optional<Order> findByIdAndUserId(long id, long userId);
 }

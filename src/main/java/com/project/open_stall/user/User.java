@@ -38,6 +38,8 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 25, unique = true)
     private String userName;
 
+    private boolean active = true;
+
     @NotBlank(message = "Email can not be blank")
     @Email(message = "Please use a valid email address")
     @Column(unique = true)

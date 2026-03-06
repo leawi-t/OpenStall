@@ -53,14 +53,15 @@ public class ProductService {
         return productMapper.toDetail(product);
     }
 
-    public Page<ProductResponseDto> filter(String name, String model, BigDecimal salePrice,
-                                           Long categoryId, String description, Pageable pageable) {
+    public Page<ProductResponseDto> filter(String name, String model, BigDecimal min,
+                                           BigDecimal max, Long categoryId, String description, Pageable pageable) {
         Specification<Product> spec = Specification.where(ProductSpecs.isActive())
                 .and(ProductSpecs.hasName(name))
                 .and(ProductSpecs.hasModel(model))
-                .and(ProductSpecs.maxPrice(salePrice))
+                .and(ProductSpecs.hasPrice(min, max))
                 .and(ProductSpecs.hasCategory(categoryId))
                 .and(ProductSpecs.hasDescription(description));
+
         return productRepo.findAll(spec, pageable).map(productMapper::toResponse);
     }
 

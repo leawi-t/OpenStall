@@ -44,12 +44,13 @@ public class ProductController {
     public ResponseEntity<PagedModel<ProductResponseDto>> filterProducts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String model,
-            @RequestParam(required = false) BigDecimal salePrice,
+            @RequestParam(required = false) BigDecimal min,
+            @RequestParam(required = false) BigDecimal max,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String description,
             Pageable pageable
     ){
-        Page<ProductResponseDto> page = service.filter(name, model, salePrice, categoryId, description, pageable);
+        Page<ProductResponseDto> page = service.filter(name, model, min, max, categoryId, description, pageable);
         return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
     }
 

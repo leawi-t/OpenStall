@@ -31,10 +31,12 @@ public class ProductSpecs {
         });
     }
 
-    public static Specification<Product> maxPrice(BigDecimal salePrice){
+    public static Specification<Product> hasPrice(BigDecimal min, BigDecimal max){
         return (root, query, cb) -> {
-            if (salePrice == null || salePrice.compareTo(BigDecimal.ZERO) < 0) return null;
-            return cb.lessThanOrEqualTo(root.get("salePrice"), salePrice);
+            if (min == null && max == null) return null;
+            if (min == null) return cb.lessThanOrEqualTo(root.get("salePrice"), max);
+            if (max == null) return cb.greaterThanOrEqualTo(root.get("salePrice"), min);
+            return cb.between(root.get("salePrice"), min ,max);
         };
     }
 

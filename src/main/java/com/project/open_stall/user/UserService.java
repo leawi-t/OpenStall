@@ -2,6 +2,10 @@ package com.project.open_stall.user;
 
 import com.project.open_stall.common.exception.InvalidOperationException;
 import com.project.open_stall.common.exception.ResourceNotFoundException;
+import com.project.open_stall.order.OrderRepo;
+import com.project.open_stall.order.OrderService;
+import com.project.open_stall.order.model.Order;
+import com.project.open_stall.order.model.OrderStatus;
 import com.project.open_stall.supplierProfile.SupplierProfileMapper;
 import com.project.open_stall.cart.model.Cart;
 import com.project.open_stall.supplierProfile.dto.SupplierProfileDetailsDto;
@@ -15,8 +19,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,21 +33,24 @@ public class UserService {
     private final UserRepo userRepo;
     private final UserMapper userMapper;
     private final SupplierProfileMapper profileMapper;
+    private final OrderService orderService;
+    private final OrderRepo orderRepo;
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public Page<UserResponseDto> getAllUsers(Pageable pageable){
-        Page<User> page = userRepo.findAll(pageable);
-        return page.map(userMapper::toResponse);
+    // Can I preauthorize some of the filters for the admin like active == null or false? or should I create a separate method where I use @Preauthorize and make the active parameter always true for this method
+    public Page<UserResponseDto> getUsers(Pageable pageable, Boolean active, String email,
+                                          String username, LocalDateTime start, LocalDateTime end) {
+        Specification<User> spec = Specification.where(UserSpecs.isActive(active))
+                .and(UserSpecs.hasDate(start, end))
+                .and(UserSpecs.hasEmail(email))
+                .and(UserSpecs.hasUsername(username));
+
+        return userRepo.findAll(spec, pageable).map(userMapper::toResponse);
     }
 
-    public UserDetailDto getUserById(long id){
-        return userMapper.toDetail(userRepo.findById(id).
-                orElseThrow(()-> new ResourceNotFoundException("User with " + id + " does not exist")));
-    }
-
-    public UserDetailDto searchUser(String userName){
-        return userMapper.toDetail(userRepo.findByUserName(userName)
-                .orElseThrow(() -> new ResourceNotFoundException(userName + " does not exist")));
+    //should I Use a method like findByIdAndActive here?
+    public UserResponseDto getUserById(long userId){
+        return userMapper.toResponse(userRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found")));
     }
 
     @Transactional
@@ -87,7 +98,7 @@ public class UserService {
     public void deleteUser(long userId){
         if (!userRepo.existsById(userId))
             throw new ResourceNotFoundException("User with " + userId + " does not exist");
-        userRepo.deleteById(userId);
+
     }
 
     @Transactional
@@ -124,4 +135,32 @@ public class UserService {
         user.setSupplierProfile(null);
         user.setRole(Role.valueOf("CONSUMER"));
     }
+
+    @Transactional
+    public void softDeleteUser(long userId){
+        User user = userRepo.findById(userId).
+                orElseThrow(() -> new ResourceNotFoundException("User with " + userId + " does not exist"));
+
+        user.setActive(false);
+
+        LocalDateTime deletedAt = LocalDateTime.now();
+        user.setUserName(user.getUserName() + deletedAt);
+        user.setEmail(user.getUserName() + deletedAt);
+
+        if (user.getCart() != null) {
+            user.getCart().getItems().clear();
+        }
+
+        if (user.getRole() == Role.SUPPLIER && user.getSupplierProfile() != null) {
+            user.getSupplierProfile().getProducts().forEach(product -> {
+                product.setActive(false);
+            });
+        }
+
+        List<Order> orders = orderRepo.findByUserIdAndStatus(userId, OrderStatus.PENDING);
+        for (Order order : orders) {
+            orderService.cancelOrder(userId, order.getId());
+        }
+    }
+
 }

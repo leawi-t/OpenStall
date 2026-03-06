@@ -4,12 +4,16 @@ import com.project.open_stall.supplierProfile.dto.*;
 import com.project.open_stall.user.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.lang.annotation.DeclareWarning;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 //TODO: remember to preAuthorize and make sure to check the user logged in can update his/her profile only
 
@@ -21,19 +25,16 @@ public class UserController {
     private final UserService service;
 
     @GetMapping
-    public ResponseEntity<PagedModel<UserResponseDto>> getAllUsers(Pageable pageable){
-        Page<UserResponseDto> page = service.getAllUsers(pageable);
-        return new ResponseEntity<>(new PagedModel<>(page), HttpStatus.OK);
-    }
-
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserDetailDto> getUserById(@PathVariable long userId){
-        return new ResponseEntity<>(service.getUserById(userId), HttpStatus.OK);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<UserDetailDto> searchUser(@RequestParam String username){
-        return new ResponseEntity<>(service.searchUser(username), HttpStatus.OK);
+    public ResponseEntity<PagedModel<UserResponseDto>> getUser(
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) LocalDateTime start,
+            @RequestParam(required = false) LocalDateTime end,
+            Pageable pageable
+    ){
+        Page<UserResponseDto> page = service.getUsers(pageable, active, email, username, start, end);
+        return ResponseEntity.ok(new PagedModel<>(page));
     }
 
     @PostMapping

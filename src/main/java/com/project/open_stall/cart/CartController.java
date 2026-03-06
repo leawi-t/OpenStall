@@ -16,8 +16,6 @@ import java.util.List;
 @RequestMapping("/api/cart")
 public class CartController {
 
-    // I added the {userId} because I haven't implemented security yet
-
     private final CartService service;
 
     @GetMapping("/{userId}")
