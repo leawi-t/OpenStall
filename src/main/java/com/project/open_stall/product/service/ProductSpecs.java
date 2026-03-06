@@ -1,6 +1,7 @@
 package com.project.open_stall.product.service;
 
 import com.project.open_stall.product.model.Product;
+import org.springframework.beans.factory.BeanRegistry;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -45,6 +46,13 @@ public class ProductSpecs {
         return (root, query, cb) -> {
             if (categoryId == null) return null;
             return cb.equal(root.join("categories").get("id"), categoryId);
+        };
+    }
+
+    public static Specification<Product> hasSupplier(Long supplierId) {
+        return (root, query, cb) -> {
+            if (supplierId == null) return null;
+            return cb.equal(root.join("supplierProfile").get("id"), supplierId);
         };
     }
 

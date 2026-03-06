@@ -38,7 +38,8 @@ public class ProductService {
                 .and(ProductSpecs.hasPrice(dto.min(), dto.max()))
                 .and(ProductSpecs.hasCategory(dto.categoryId()))
                 .and(ProductSpecs.hasDescription(dto.description()))
-                .and(ProductSpecs.hasDate(dto.start(), dto.end()));
+                .and(ProductSpecs.hasDate(dto.start(), dto.end()))
+                .and(ProductSpecs.hasSupplier(dto.supplierId()));
 
         return productRepo.findAll(spec, pageable).map(productMapper::toResponse);
     }

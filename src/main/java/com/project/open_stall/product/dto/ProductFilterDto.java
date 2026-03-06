@@ -25,6 +25,8 @@ public record ProductFilterDto(
 
         Long categoryId,
 
+        Long supplierId,
+
         @Size(max = 1000, message = "description can't be longer than 1000 characters")
         String description,
 
