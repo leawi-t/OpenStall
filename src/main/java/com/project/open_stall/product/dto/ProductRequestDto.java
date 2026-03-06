@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record ProductRequestDto(
+        @NotNull
+        Long userId,
+
         @NotBlank
         @Size(max = 50, message = "Product name can be at max 50 characters")
         String name,

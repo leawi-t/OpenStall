@@ -53,14 +53,14 @@ public class ProductService {
 
     @Transactional
     @PreAuthorize("hasRole('SUPPLIER')")
-    public ProductDetailDto addProduct(ProductRequestDto dto, long userId){
+    public ProductDetailDto addProduct(ProductRequestDto dto){
         Product product = productMapper.toEntity(dto);
 
         List<Category> categories = categoryRepo.findAllById(dto.categoryIds());
         product.setCategories(new HashSet<>(categories));
 
-        User user = userRepo.findById(userId)
-                .orElseThrow(()->new ResourceNotFoundException("User with " + userId + " does not exist"));
+        User user = userRepo.findById(dto.userId())
+                .orElseThrow(()->new ResourceNotFoundException("User with " + dto.userId() + " does not exist"));
 
         product.setSupplierProfile(user.getSupplierProfile());
         user.getSupplierProfile().addProduct(product);
@@ -69,13 +69,9 @@ public class ProductService {
 
     @Transactional
     @PreAuthorize("hasRole('SUPPLIER')")
-    public ProductDetailDto updateProduct(ProductUpdateDto dto, long productId, long userId) {
+    public ProductDetailDto updateProduct(ProductUpdateDto dto, long productId) {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-
-        if (product.getSupplierProfile().getUser().getId() != userId) {
-            throw new InvalidOperationException("Not Authorized to update the product");
-        }
 
         if (!product.isActive()) throw new ResourceNotFoundException("The Product does not exist");
 

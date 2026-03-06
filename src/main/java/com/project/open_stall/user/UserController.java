@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -24,7 +23,6 @@ public class UserController {
     private final UserService service;
 
     @GetMapping
-    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<PagedModel<UserResponseDto>> getUser(
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) String email,
