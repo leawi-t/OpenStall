@@ -6,16 +6,11 @@ import com.project.open_stall.category.Category;
 import com.project.open_stall.order.OrderService;
 import com.project.open_stall.order.dto.orderDto.OrderDetailsDto;
 import com.project.open_stall.order.model.AddressSnapshot;
-import com.project.open_stall.product.dto.ProductRequestDto;
 import com.project.open_stall.product.model.Product;
 import com.project.open_stall.category.CategoryRepo;
 import com.project.open_stall.product.ProductRepo;
-import com.project.open_stall.product.service.ProductService;
-import com.project.open_stall.product.service.ProductSpecs;
-import com.project.open_stall.supplierProfile.SupplierProfileMapper;
 import com.project.open_stall.supplierProfile.dto.AddressDto;
 import com.project.open_stall.supplierProfile.dto.SupplierProfileRequestDto;
-import com.project.open_stall.supplierProfile.model.Address;
 import com.project.open_stall.supplierProfile.model.SocialMediaLink;
 import com.project.open_stall.supplierProfile.model.SupplierProfile;
 import com.project.open_stall.user.*;
@@ -24,9 +19,8 @@ import com.project.open_stall.user.dto.UserRequestDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -46,7 +40,7 @@ public class DataInitializer implements CommandLineRunner {
     private final ProductRepo productRepo;
     private final CartService cartService;
     private final OrderService orderService;
-    private final SupplierProfileMapper supplierProfileMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -77,7 +71,7 @@ public class DataInitializer implements CommandLineRunner {
             );
 
             UserRequestDto supplierDto = new UserRequestDto(
-                    "John", "Doe", "john_supplier", "John123!", "john@gmail.com", "SUPPLIER", profileDto
+                    "John", "Doe", "john_supplier", passwordEncoder.encode("John123!"), "john@gmail.com", "SUPPLIER", profileDto
             );
 
             UserDetailDto supplier = userService.registerUser(supplierDto);
@@ -85,7 +79,7 @@ public class DataInitializer implements CommandLineRunner {
 
             // 3. Register a Consumer
             UserRequestDto consumerDto = new UserRequestDto(
-                    "Jane", "Smith", "jane_buyer", "Jane123!", "jane@gamil.com", "CONSUMER", null
+                    "Jane", "Smith", "jane_buyer", passwordEncoder.encode("Jane123!"), "jane@gamil.com", "CONSUMER", null
             );
             UserDetailDto consumer = userService.registerUser(consumerDto);
             System.out.println("✅ Consumer Registered: " + consumer.userName());

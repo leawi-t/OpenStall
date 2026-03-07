@@ -3,7 +3,6 @@ package com.project.open_stall.order;
 import com.project.open_stall.order.dto.orderDto.OrderCancellationResponse;
 import com.project.open_stall.order.dto.orderDto.OrderDetailsDto;
 import com.project.open_stall.order.dto.orderDto.OrderResponseDto;
-import com.project.open_stall.order.dto.orderItems.OrderItemResponseDto;
 import com.project.open_stall.order.model.AddressSnapshot;
 import com.project.open_stall.order.model.OrderStatus;
 import lombok.RequiredArgsConstructor;
@@ -27,19 +26,7 @@ public class OrderController {
     private final OrderService service;
 
     @GetMapping
-    public ResponseEntity<PagedModel<OrderResponseDto>> getAllOrders(Pageable pageable) {
-        Page<OrderResponseDto> page = service.getAllOrders(pageable);
-        return ResponseEntity.ok(new PagedModel<>(page));
-    }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<PagedModel<OrderResponseDto>> getAllOrdersByUserId(@PathVariable long userId, Pageable pageable) {
-        Page<OrderResponseDto> page = service.getAllOrdersByUser(userId, pageable);
-        return ResponseEntity.ok(new PagedModel<>(page));
-    }
-
-    @GetMapping("/filter")
-    public ResponseEntity<PagedModel<OrderResponseDto>> filter(
+    public ResponseEntity<PagedModel<OrderResponseDto>> getOrders(
             @RequestParam(required = false) long userId,
             @RequestParam(required = false) BigDecimal min,
             @RequestParam(required = false) BigDecimal max,
@@ -48,20 +35,19 @@ public class OrderController {
             @RequestParam(required = false)  LocalDateTime end,
             Pageable pageable
     ) {
-        Page<OrderResponseDto> page = service.filter(pageable, userId, min, max, status, start, end);
+        Page<OrderResponseDto> page = service.getOrders(userId, min, max, status, start, end, pageable);
+        return ResponseEntity.ok(new PagedModel<>(page));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<PagedModel<OrderResponseDto>> getAllOrdersByUserId(@PathVariable Long userId, Pageable pageable) {
+        Page<OrderResponseDto> page = service.getAllOrdersByUser(userId, pageable);
         return ResponseEntity.ok(new PagedModel<>(page));
     }
 
     @GetMapping("/{userId}/{orderId}")
     public ResponseEntity<OrderDetailsDto> getOrderById(@PathVariable long userId, @PathVariable long orderId) {
         return ResponseEntity.ok(service.getOrderById(userId, orderId));
-    }
-
-    @GetMapping("/{userId}/{orderId}/{orderItemId}")
-    public ResponseEntity<OrderItemResponseDto> getOrderItem(@PathVariable long userId,
-                                                                 @PathVariable long orderId,
-                                                                 @PathVariable long orderItemId) {
-        return ResponseEntity.ok(service.getOrderItem(userId, orderId, orderItemId));
     }
 
     @PostMapping("/{userId}")
@@ -76,7 +62,7 @@ public class OrderController {
     }
 
     @PatchMapping("/{orderId}/status")
-    public ResponseEntity<OrderDetailsDto> updateStatus(
+    public ResponseEntity<OrderResponseDto> updateStatus(
             @PathVariable Long orderId,
             @RequestParam OrderStatus newStatus) {
 

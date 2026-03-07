@@ -8,7 +8,6 @@ public record OrderResponseDto(
         long id,
         String status,
         BigDecimal totalAmount,
-        AddressSnapshot shippingAddress,
-        int numberOfItems
+        AddressSnapshot shippingAddress
 ) {
 }

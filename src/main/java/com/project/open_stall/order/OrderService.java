@@ -11,7 +11,6 @@ import com.project.open_stall.order.dto.orderDto.OrderDetailsDto;
 import com.project.open_stall.order.dto.orderDto.OrderResponseDto;
 import com.project.open_stall.order.model.*;
 import com.project.open_stall.product.model.Product;
-import com.project.open_stall.order.dto.orderItems.OrderItemResponseDto;
 import com.project.open_stall.order.mapper.OrderItemMapper;
 import com.project.open_stall.order.mapper.OrderMapper;
 import com.project.open_stall.user.UserRepo;
@@ -39,19 +38,8 @@ public class OrderService {
     private final CartService cartService;
 
     @PreAuthorize("hasRole(Admin)")
-    public Page<OrderResponseDto> getAllOrders(Pageable pageable){
-        return orderRepo.findAll(pageable).map(orderMapper::toResponse);
-    }
-
-    public Page<OrderResponseDto> getAllOrdersByUser(long userId, Pageable pageable) {
-        Specification<Order> spec = Specification.where(OrderSpecs.hasUserId(userId));
-        return orderRepo.findAll(spec, pageable).map(orderMapper::toResponse);
-    }
-
-    @PreAuthorize("hasRole(Admin)")
-    public Page<OrderResponseDto> filter(Pageable pageable, long userId, BigDecimal min,
-                                         BigDecimal max, String status, LocalDateTime start, LocalDateTime end){
-
+    public Page<OrderResponseDto> getOrders(long userId, BigDecimal min, BigDecimal max,
+                                           String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
         OrderStatus orderStatus = (status != null) ? OrderStatus.valueOf(status.toUpperCase()) : null;
 
         Specification<Order> spec = Specification.where(OrderSpecs.hasUserId(userId))
@@ -59,24 +47,18 @@ public class OrderService {
                 .and(OrderSpecs.createdBetween(start, end))
                 .and(OrderSpecs.hasTotalAmountBetween(min, max));
 
-        return  orderRepo.findAll(spec, pageable).map(orderMapper::toResponse);
+        return orderRepo.findAll(spec, pageable).map(orderMapper::toResponse);
+    }
+
+    // for the individual to view their orders
+    public Page<OrderResponseDto> getAllOrdersByUser(long userId, Pageable pageable) {
+        Specification<Order> spec = Specification.where(OrderSpecs.hasUserId(userId));
+        return orderRepo.findAll(spec, pageable).map(orderMapper::toResponse);
     }
 
     public OrderDetailsDto getOrderById(long userId, long orderId){
         return orderMapper.toDetails(orderRepo.findByIdAndUserId(orderId, userId)
                 .orElseThrow(()-> new ResourceNotFoundException("Order with id: " + orderId + " was not found")));
-    }
-
-    public OrderItemResponseDto getOrderItem(long userId, long orderId, long orderItemId){
-        Order order = orderRepo.findByIdAndUserId(userId, orderId)
-                .orElseThrow(()-> new ResourceNotFoundException("Order was not found"));
-
-        OrderItem item = order.getOrderItems().stream().
-                filter(x->x.getId() == orderItemId)
-                .findFirst()
-                .orElseThrow(()-> new ResourceNotFoundException( "The order item was not found"));
-
-        return orderItemMapper.toResponse(item);
     }
 
     @Transactional
@@ -170,7 +152,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDetailsDto updateOrderStatus(long orderId, OrderStatus newStatus) {
+    public OrderResponseDto updateOrderStatus(long orderId, OrderStatus newStatus) {
         Order order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
@@ -181,6 +163,6 @@ public class OrderService {
         }
 
         order.setStatus(newStatus);
-        return orderMapper.toDetails(orderRepo.save(order));
+        return orderMapper.toResponse(orderRepo.save(order));
     }
 }

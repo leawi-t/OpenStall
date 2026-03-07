@@ -12,6 +12,7 @@ import com.project.open_stall.cart.model.Cart;
 import com.project.open_stall.supplierProfile.dto.SupplierProfileRequestDto;
 import com.project.open_stall.supplierProfile.dto.SupplierProfileResponseDto;
 import com.project.open_stall.supplierProfile.dto.SupplierProfileUpdateDto;
+import com.project.open_stall.supplierProfile.model.SupplierProfile;
 import com.project.open_stall.user.dto.UserDetailDto;
 import com.project.open_stall.user.dto.UserRequestDto;
 import com.project.open_stall.user.dto.UserResponseDto;
@@ -50,7 +51,12 @@ public class UserService {
     }
 
     public SupplierProfileResponseDto getUserById(long userId){
-        return profileMapper.toResponse(userRepo.findById(userId).get().getSupplierProfile());
+        User user = userRepo.findById(userId)
+                .orElseThrow(()->new ResourceNotFoundException("User with id: " + userId + " was not found"));
+
+        if (!user.isActive()) throw new ResourceNotFoundException("User with id: " + userId + " was not found");
+
+        return profileMapper.toResponse(user.getSupplierProfile());
     }
 
     @Transactional
