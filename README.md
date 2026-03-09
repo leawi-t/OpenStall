@@ -20,7 +20,7 @@ OpenStall is a robust, scalable backend system built with Spring Boot 3. It brid
 ## 🛠️ Technical Stack
 Framework: Spring Boot 3.x
 Language: Java 21
-Database: MY-SQL 
+Database: MySQL 
 Security: Spring Security 6, JWT (io.jsonwebtoken)
 Persistence: Spring Data JPA (Hibernate)
 
