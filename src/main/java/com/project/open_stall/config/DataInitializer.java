@@ -9,6 +9,7 @@ import com.project.open_stall.order.model.AddressSnapshot;
 import com.project.open_stall.product.model.Product;
 import com.project.open_stall.category.CategoryRepo;
 import com.project.open_stall.product.ProductRepo;
+import com.project.open_stall.security.AuthService;
 import com.project.open_stall.supplierProfile.dto.AddressDto;
 import com.project.open_stall.supplierProfile.dto.SupplierProfileRequestDto;
 import com.project.open_stall.supplierProfile.model.SocialMediaLink;
@@ -41,6 +42,7 @@ public class DataInitializer implements CommandLineRunner {
     private final CartService cartService;
     private final OrderService orderService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
     @Override
     @Transactional
@@ -74,14 +76,14 @@ public class DataInitializer implements CommandLineRunner {
                     "John", "Doe", "john_supplier", passwordEncoder.encode("John123!"), "john@gmail.com", "SUPPLIER", profileDto
             );
 
-            UserDetailDto supplier = userService.registerUser(supplierDto);
+            UserDetailDto supplier = authService.registerUser(supplierDto);
             System.out.println("✅ Supplier Registered: " + supplier.userName());
 
             // 3. Register a Consumer
             UserRequestDto consumerDto = new UserRequestDto(
                     "Jane", "Smith", "jane_buyer", passwordEncoder.encode("Jane123!"), "jane@gamil.com", "CONSUMER", null
             );
-            UserDetailDto consumer = userService.registerUser(consumerDto);
+            UserDetailDto consumer = authService.registerUser(consumerDto);
             System.out.println("✅ Consumer Registered: " + consumer.userName());
 
             User managedSupplier = userRepo.findById(supplier.id())

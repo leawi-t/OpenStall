@@ -40,11 +40,6 @@ public class UserController {
         return ResponseEntity.ok(service.getUserById(userId));
     }
 
-    @PostMapping
-    public ResponseEntity<UserDetailDto> registerUser(@RequestBody @Valid UserRequestDto dto){
-        return new ResponseEntity<>(service.registerUser(dto), HttpStatus.CREATED);
-    }
-
     @PutMapping("/{userId}")
     public ResponseEntity<UserDetailDto> updateUser(
             @RequestBody @Valid UserUpdateDto dto,

@@ -60,38 +60,6 @@ public class UserService {
     }
 
     @Transactional
-    public UserDetailDto registerUser(UserRequestDto dto){
-        if (userRepo.existsByEmail(dto.email())){
-            throw new InvalidOperationException("Email already in use");
-        }
-
-        if (userRepo.existsByUserName(dto.userName())){
-            throw new InvalidOperationException("Username already in use");
-        }
-
-        User user = userMapper.toEntity(dto);
-        Cart cart = new Cart();
-        user.setCart(cart);
-
-        if (dto.role().equalsIgnoreCase("Supplier")){
-            if (dto.supplierProfile() == null)
-                throw new InvalidOperationException("Supplier profile data is required for Supplier role");
-            else
-                user.setSupplierProfile(profileMapper.toEntity(dto.supplierProfile()));
-        }
-
-        else{
-            if (dto.supplierProfile() != null)
-                throw new InvalidOperationException("Consumer roles can not have Supplier Profiles");
-            else
-                user.setSupplierProfile(null);
-        }
-
-        User savedUser = userRepo.save(user);
-        return userMapper.toDetail(savedUser);
-    }
-
-    @Transactional
     public UserDetailDto updateUser(UserUpdateDto dto, long userId){
         User user = userRepo.findById(userId).
                 orElseThrow(() -> new ResourceNotFoundException("User with " + userId + " does not exist"));
